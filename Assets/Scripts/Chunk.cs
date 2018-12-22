@@ -7,7 +7,7 @@ public class Chunk : MonoBehaviour
     private const int CHUNK_SIZE = 10;
     private float startX;
     private float startZ;
-    public GameObject spawnObject;  
+    public GameObject spawnObject;
 
     // Start is called before the first frame update
     void Start()
