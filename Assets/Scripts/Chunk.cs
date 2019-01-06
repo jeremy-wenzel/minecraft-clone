@@ -7,7 +7,6 @@ public class Chunk : MonoBehaviour
     private const int CHUNK_SIZE = 10;
     private float startX;
     private float startZ;
-    public GameObject spawnObject;
 
     // Start is called before the first frame update
     void Start()
@@ -19,7 +18,7 @@ public class Chunk : MonoBehaviour
             for (int j = 0; j < CHUNK_SIZE; ++j)
             {
                 Vector3 pos = new Vector3(startX + i, 0, startZ + j);
-                Instantiate(spawnObject).transform.SetPositionAndRotation(pos, new Quaternion());
+                Instantiate(PrefabManager.GetPrefab(PrefabType.CUBE)).transform.SetPositionAndRotation(pos, new Quaternion());
             }
         }
     }

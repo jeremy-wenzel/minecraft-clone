@@ -26,6 +26,13 @@ public class FirstPersonCamera : MonoBehaviour
         float zTranslate = Input.GetAxis("Vertical");
         Vector3 trans = new Vector3(xTranslate, 0, zTranslate) * TRANS_SPEED * Time.deltaTime;
 
+        // Lock the X. By setting to 0 the rotation doesn't do anything
+        float totalX = this.transform.eulerAngles.x + rot.x;
+        if (totalX > 90 && totalX < 270)
+        {
+            rot.x = 0;
+        }
+
         this.transform.eulerAngles = rot + this.transform.eulerAngles;
         this.transform.Translate(trans);
     }
