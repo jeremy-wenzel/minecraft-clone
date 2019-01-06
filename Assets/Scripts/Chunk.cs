@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
-    private const int CHUNK_SIZE = 10;
+    public const int CHUNK_SIZE = 10;
     private float startX;
     private float startZ;
 
