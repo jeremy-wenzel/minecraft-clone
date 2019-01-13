@@ -6,11 +6,11 @@ public class FirstPersonCamera : MonoBehaviour
     public const int ROT_SPEED = 10;
     public const int TRANS_SPEED = 10;
 
+    public GameObject playerObject;
+
     // Start is called before the first frame update
     void Start()
     {
-        // Set the target to origin
-        this.transform.SetPositionAndRotation(new Vector3(0, 2, 0), new Quaternion());
     }
 
     // Update is called once per frame
@@ -27,13 +27,15 @@ public class FirstPersonCamera : MonoBehaviour
         Vector3 trans = new Vector3(xTranslate, 0, zTranslate) * TRANS_SPEED * Time.deltaTime;
 
         // Lock the X. By setting to 0 the rotation doesn't do anything
-        float totalX = this.transform.eulerAngles.x + rot.x;
+        float totalX = gameObject.transform.eulerAngles.x + rot.x;
         if (totalX > 90 && totalX < 270)
         {
             rot.x = 0;
         }
 
-        this.transform.eulerAngles = rot + this.transform.eulerAngles;
-        this.transform.Translate(trans);
+        Vector3 currentAngles = gameObject.transform.eulerAngles + rot;
+        currentAngles.z = 0;
+        gameObject.transform.eulerAngles = currentAngles;
+        gameObject.transform.Translate(trans);
     }
 }
