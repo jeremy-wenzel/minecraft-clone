@@ -4,10 +4,10 @@ public class FirstPersonCamera : MonoBehaviour
 {
     // The target to keep the camera on
     public const int ROT_SPEED = 10;
-    public const int TRANS_SPEED = 10;
-    public const int SPRINT_SPEED = 2;
 
     public GameObject playerObject;
+
+    private bool _isPlayerJumping;
 
     // Start is called before the first frame update
     void Start()
@@ -18,7 +18,6 @@ public class FirstPersonCamera : MonoBehaviour
     void Update()
     {
         SetRotations();
-        SetTranslation();
     }
 
     /// <summary>
@@ -45,25 +44,11 @@ public class FirstPersonCamera : MonoBehaviour
         this.transform.eulerAngles = currentAngles;
 
         // Set parent Y to rot.y
-        currentAngles = playerObject.transform.eulerAngles;
+        Transform parent = transform.parent;
+        currentAngles = parent.eulerAngles;
         currentAngles.y += rot.y;
-        playerObject.transform.eulerAngles = currentAngles;
+        parent.eulerAngles = currentAngles;
     }
 
-    /// <summary>
-    /// Sets the translation of the parent object.
-    /// </summary>
-    private void SetTranslation()
-    {
-        bool isSprinting = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        float xTranslate = Input.GetAxis("Horizontal");
-        float zTranslate = Input.GetAxis("Vertical");
-        Vector3 trans = new Vector3(xTranslate, 0, zTranslate) * TRANS_SPEED * Time.deltaTime;
-        if (isSprinting)
-        {
-            trans *= SPRINT_SPEED;
-        }
-
-        playerObject.transform.Translate(trans);
-    }
+    
 }
