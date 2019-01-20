@@ -16,6 +16,9 @@ namespace Assets.Scripts
             MaintainUpgrightRotation();
         }
 
+        /// <summary>
+        /// Maintins the upright orientation of the player
+        /// </summary>
         private void MaintainUpgrightRotation()
         {
             Vector3 eulerAngles = this.transform.rotation.eulerAngles;
