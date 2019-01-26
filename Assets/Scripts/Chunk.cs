@@ -35,7 +35,12 @@ public class Chunk : MonoBehaviour
                 float totalY =  perlin.DoPerlin(newX, newZ) * steepnessY;
                 Debug.Log($"Y value = {steepnessY}, Total Y = {(int)totalY}");
                 Vector3 pos = new Vector3(startX + i, (int)totalY, startZ + j);
-                Instantiate(PrefabManager.GetPrefab(PrefabType.CUBE)).transform.SetPositionAndRotation(pos, new Quaternion());
+                PrefabType prefabType = PrefabType.CUBE;
+                if (totalY > 8)
+                {
+                    prefabType = PrefabType.SNOW;
+                }
+                Instantiate(PrefabManager.GetPrefab(prefabType)).transform.SetPositionAndRotation(pos, new Quaternion());
             }
         }
     }

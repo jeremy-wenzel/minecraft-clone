@@ -43,6 +43,7 @@ namespace Assets.Scripts
 
             ix = Math.Abs(ix % _xMax);
             iy = Math.Abs(iy % _yMax);
+
             return (dx * _gradient[iy, ix, 0] + dy * _gradient[iy, ix, 1]);
         }
 
