@@ -5,25 +5,36 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
-    public const int CHUNK_SIZE = 10;
+    public const int CHUNK_SIZE = 50;
 
     public float startX;
     public float startZ;
 
     private float _scaleFactor = 10f;
+    private int _worldScale = 350;
+    private int _offset = 1000;
+    private static readonly Perlin perlin = new Perlin();
 
     // Start is called before the first frame update
     void Start()
     {
-        Perlin perlin = new Perlin();
         startX = gameObject.transform.position.x;
         startZ = gameObject.transform.position.z;
         for (int i = 0; i < CHUNK_SIZE; ++i)
         {
             for (int j = 0; j < CHUNK_SIZE; ++j)
             {
-                float y = perlin.DoPerlin((i * _scaleFactor) / 3.0f, (j * _scaleFactor)  /3.0f);
-                Vector3 pos = new Vector3(startX + i, y, startZ + j);
+                float newX = (startX + i + _offset) / _scaleFactor / 2;
+                float newZ = (startZ + j + _offset) / _scaleFactor / 2;
+                float y = perlin.DoPerlin(newX, newZ) * 150;
+
+                float totalY = 0;
+                for (int k = 1; k <= 16; k *= 2)
+                {
+                    totalY += 1 / k * perlin.DoPerlin(newX / k, newZ / k) * y;
+                }
+                Debug.Log($"Y value = {y}, Total Y = {(int)totalY}");
+                Vector3 pos = new Vector3(startX + i, (int)totalY, startZ + j);
                 Instantiate(PrefabManager.GetPrefab(PrefabType.CUBE)).transform.SetPositionAndRotation(pos, new Quaternion());
             }
         }

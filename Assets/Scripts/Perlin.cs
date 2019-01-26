@@ -40,6 +40,9 @@ namespace Assets.Scripts
         {
             float dx = x - (float)ix;
             float dy = y - (float)iy;
+
+            ix = Math.Abs(ix % _xMax);
+            iy = Math.Abs(iy % _yMax);
             return (dx * _gradient[iy, ix, 0] + dy * _gradient[iy, ix, 1]);
         }
 
