@@ -10,9 +10,10 @@ public class Chunk : MonoBehaviour
     public float startX;
     public float startZ;
 
-    private float _scaleFactor = 10f;
-    private int _worldScale = 350;
-    private int _offset = 1000;
+    private const float _scaleFactor = 20f;
+    private const float _worldScale = 5f;
+    private const float _steepnessScale = 200f;
+    private const int _offset = 1000;
     private static readonly Perlin perlin = new Perlin();
 
     // Start is called before the first frame update
@@ -24,16 +25,15 @@ public class Chunk : MonoBehaviour
         {
             for (int j = 0; j < CHUNK_SIZE; ++j)
             {
-                float newX = (startX + i + _offset) / _scaleFactor / 2;
-                float newZ = (startZ + j + _offset) / _scaleFactor / 2;
-                float y = perlin.DoPerlin(newX, newZ) * 150;
+                float newX = (startX + i + _offset) / _scaleFactor;
+                float newZ = (startZ + j + _offset) / _scaleFactor;
 
-                float totalY = 0;
-                for (int k = 1; k <= 16; k *= 2)
-                {
-                    totalY += 1 / k * perlin.DoPerlin(newX / k, newZ / k) * y;
-                }
-                Debug.Log($"Y value = {y}, Total Y = {(int)totalY}");
+                // this essentially allows us to generate the steepness. Dividing by _worldScale
+                // allows us to have plains and montains because the steepness spans over a longer distance
+                float steepnessY = perlin.DoPerlin(newX / _worldScale, newZ / _worldScale) * _steepnessScale;
+
+                float totalY =  perlin.DoPerlin(newX, newZ) * steepnessY;
+                Debug.Log($"Y value = {steepnessY}, Total Y = {(int)totalY}");
                 Vector3 pos = new Vector3(startX + i, (int)totalY, startZ + j);
                 Instantiate(PrefabManager.GetPrefab(PrefabType.CUBE)).transform.SetPositionAndRotation(pos, new Quaternion());
             }

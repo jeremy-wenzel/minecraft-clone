@@ -6,7 +6,7 @@ namespace Assets.Scripts
     {
         public const int TRANS_SPEED = 10;
         public const int SPRINT_SPEED = 2;
-        public const int FORCE_MULTIPLIER = 100;
+        public const int FORCE_MULTIPLIER = 500;
 
         private bool _isPlayerJumping = false;
 
