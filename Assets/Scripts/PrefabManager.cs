@@ -3,7 +3,7 @@
 public class PrefabManager: Singleton<PrefabManager>
 {
     public GameObject CHUNK;
-    public GameObject CUBE;
+    public GameObject GRASS;
     public GameObject SNOW;
 
     public static GameObject GetPrefab(PrefabType prefabType)
@@ -12,8 +12,8 @@ public class PrefabManager: Singleton<PrefabManager>
         {
             case PrefabType.CHUNK:
                 return GetInstance().CHUNK;
-            case PrefabType.CUBE:
-                return GetInstance().CUBE;
+            case PrefabType.GRASS:
+                return GetInstance().GRASS;
             case PrefabType.SNOW:
                 return GetInstance().SNOW;
             default:
@@ -26,6 +26,6 @@ public class PrefabManager: Singleton<PrefabManager>
 public enum PrefabType
 {
     CHUNK,
-    CUBE,
+    GRASS,
     SNOW
 }

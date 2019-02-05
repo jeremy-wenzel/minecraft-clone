@@ -14,6 +14,8 @@ public class Chunk : MonoBehaviour
     private const float _worldScale = 5f;
     private const float _steepnessScale = 200f;
     private const int _offset = 1000;
+
+    private const int SNOW_MAX_Y = 8;
     private static readonly Perlin perlin = new Perlin();
 
     // Start is called before the first frame update
@@ -21,6 +23,8 @@ public class Chunk : MonoBehaviour
     {
         startX = gameObject.transform.position.x;
         startZ = gameObject.transform.position.z;
+        BiomeTypeEnum biome = BiomeManager.GetBiome(startX, startZ);
+
         for (int i = 0; i < CHUNK_SIZE; ++i)
         {
             for (int j = 0; j < CHUNK_SIZE; ++j)
@@ -31,14 +35,26 @@ public class Chunk : MonoBehaviour
                 // this essentially allows us to generate the steepness. Dividing by _worldScale
                 // allows us to have plains and montains because the steepness spans over a longer distance
                 float steepnessY = perlin.DoPerlin(newX / _worldScale, newZ / _worldScale) * _steepnessScale;
-
                 float totalY =  perlin.DoPerlin(newX, newZ) * steepnessY;
-                Debug.Log($"Y value = {steepnessY}, Total Y = {(int)totalY}");
                 Vector3 pos = new Vector3(startX + i, (int)totalY, startZ + j);
-                PrefabType prefabType = PrefabType.CUBE;
-                if (totalY > 8)
+                
+                PrefabType prefabType;
+                switch (biome)
                 {
-                    prefabType = PrefabType.SNOW;
+                    case BiomeTypeEnum.Grass:
+                        prefabType = PrefabType.GRASS;
+                        if (totalY > SNOW_MAX_Y)
+                        {
+                            prefabType = PrefabType.SNOW;
+                        }
+                        break;
+                    case BiomeTypeEnum.Snow:
+                        prefabType = PrefabType.SNOW;
+                        break;
+                    default:
+                        prefabType = PrefabType.GRASS;
+                        Debug.Log($"Unknown BiomeType {biome}");
+                        break;
                 }
                 Instantiate(PrefabManager.GetPrefab(prefabType)).transform.SetPositionAndRotation(pos, new Quaternion());
             }
