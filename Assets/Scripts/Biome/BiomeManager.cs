@@ -16,11 +16,11 @@ public class BiomeManager : Singleton<BiomeManager>
         float cx = x / X_RANGE;
         float cz = z / Z_RANGE;
 
-        Tuple<float, float> blahCuzIAmTired = new Tuple<float, float>(cx, cz);
+        Tuple<float, float> position = new Tuple<float, float>(cx, cz);
 
-        if (BiomeDictionary.ContainsKey(blahCuzIAmTired))
+        if (BiomeDictionary.ContainsKey(position))
         {
-            return BiomeDictionary[blahCuzIAmTired];
+            return BiomeDictionary[position];
         }
         else
         {
@@ -42,7 +42,7 @@ public class BiomeManager : Singleton<BiomeManager>
                     break;
             }
 
-            BiomeDictionary[blahCuzIAmTired] = newBiome;
+            BiomeDictionary[position] = newBiome;
             return newBiome;
         }
     }
