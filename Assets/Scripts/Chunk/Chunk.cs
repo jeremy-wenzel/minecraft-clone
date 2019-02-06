@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
-    public const int CHUNK_SIZE = 50;
+    public const int CHUNK_SIZE = 16;
 
     public float startX;
     public float startZ;
@@ -57,7 +57,7 @@ public class Chunk : MonoBehaviour
                         break;
                     default:
                         prefabType = PrefabType.GRASS;
-                        Debug.Log($"Unknown BiomeType {biome}");
+                        UnityEngine.Debug.Log($"Unknown BiomeType {biome}");
                         break;
                 }
                 Instantiate(PrefabManager.GetPrefab(prefabType)).transform.SetPositionAndRotation(pos, new Quaternion());
@@ -88,8 +88,6 @@ public class Chunk : MonoBehaviour
     {
         float x = position.x / CHUNK_SIZE;
         float z = position.z / CHUNK_SIZE;
-
-        Debug.Log($"{x.ToString("f0")} {z.ToString("f0")}");
 
         return $"{x.ToString("f0")} {z.ToString("f0")}";
     }

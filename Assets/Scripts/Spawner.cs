@@ -1,6 +1,4 @@
 ﻿using Assets.Scripts;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
@@ -32,10 +30,12 @@ public class Spawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // TODO: THere is a bug in here where we are not setting the current chunk correctly which means
+        // that we do this iteration
         if (!currentChunk.IsPositionInChunk(player.transform.position))
         {
             currentChunk = ChunkManager.GetChunkWithKey(Chunk.GetKey(player.transform.position));
-
+            
             for(float xOffset = -Chunk.CHUNK_SIZE; xOffset <= Chunk.CHUNK_SIZE; xOffset += Chunk.CHUNK_SIZE)
             {
                 for (float zOffset = -Chunk.CHUNK_SIZE; zOffset <= Chunk.CHUNK_SIZE; zOffset += Chunk.CHUNK_SIZE)
