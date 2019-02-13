@@ -5,15 +5,15 @@ public class Spawner : MonoBehaviour
 {
     public GameObject player;
 
-    private const int INIT_SIZE = 3;
+    private const int INIT_SIZE = 10;
     private Chunk currentChunk = null;
 
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < INIT_SIZE; i++)
+        for (int i = -INIT_SIZE; i <= INIT_SIZE; i++)
         {
-            for (int j = 0; j < INIT_SIZE; j++)
+            for (int j = -INIT_SIZE; j <= INIT_SIZE; j++)
             {
                 // TODO: Refactor to a method
                 var newChunk = Instantiate(PrefabManager.GetPrefab(PrefabType.CHUNK), 
@@ -34,20 +34,46 @@ public class Spawner : MonoBehaviour
         // that we do this iteration
         if (!currentChunk.IsPositionInChunk(player.transform.position))
         {
-            currentChunk = ChunkManager.GetChunkWithKey(Chunk.GetKey(player.transform.position));
-            
-            for(float xOffset = -Chunk.CHUNK_SIZE; xOffset <= Chunk.CHUNK_SIZE; xOffset += Chunk.CHUNK_SIZE)
+            Chunk newChunk = ChunkManager.GetChunkWithKey(Chunk.GetKey(player.transform.position));
+
+            if (newChunk == null)
             {
-                for (float zOffset = -Chunk.CHUNK_SIZE; zOffset <= Chunk.CHUNK_SIZE; zOffset += Chunk.CHUNK_SIZE)
+                Debug.Log($"NewChunk null, player position = {player.transform.position}");
+                return;
+            }
+
+            float xDiff = newChunk.StartX - currentChunk.StartX;
+            float zDiff = newChunk.StartZ - currentChunk.StartZ;
+
+
+            if (Mathf.Abs(xDiff) > 0)
+            {
+                float xOffset = (xDiff > 0 ? 1 : -1) * Chunk.CHUNK_SIZE * 5;
+                for (float offset = -Chunk.CHUNK_SIZE * 5; offset < Chunk.CHUNK_SIZE * 5; offset += Chunk.CHUNK_SIZE)
                 {
-                    Vector3 pos = new Vector3(currentChunk.startX + xOffset, 0, currentChunk.startZ + zOffset);
+                    Vector3 pos = new Vector3(currentChunk.StartX + xOffset, 0, currentChunk.StartZ + offset);
                     if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
                     {
-                        var newChunk = Instantiate(PrefabManager.GetPrefab(PrefabType.CHUNK), pos, new Quaternion());
-                        ChunkManager.AddChunk((Chunk)newChunk.GetComponent(typeof(Chunk)));
+                        var newChunkZ = Instantiate(PrefabManager.GetPrefab(PrefabType.CHUNK), pos, new Quaternion());
+                        ChunkManager.AddChunk((Chunk)newChunkZ.GetComponent(typeof(Chunk)));
                     }
                 }
             }
+            else if (Mathf.Abs(zDiff) > 0)
+            {
+                float zOffset = (zDiff > 0 ? 1 : -1) * Chunk.CHUNK_SIZE * 5;
+                for (float offset = -Chunk.CHUNK_SIZE * 5; offset < Chunk.CHUNK_SIZE * 5; offset += Chunk.CHUNK_SIZE)
+                {
+                    Vector3 pos = new Vector3(currentChunk.StartX + offset, 0, currentChunk.StartZ + zOffset);
+                    if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
+                    {
+                        var newChunkZ = Instantiate(PrefabManager.GetPrefab(PrefabType.CHUNK), pos, new Quaternion());
+                        ChunkManager.AddChunk((Chunk)newChunkZ.GetComponent(typeof(Chunk)));
+                    }
+                }
+            }
+
+            currentChunk = newChunk;
         }
     }
 }

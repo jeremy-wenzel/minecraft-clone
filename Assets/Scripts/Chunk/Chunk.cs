@@ -6,10 +6,6 @@ using UnityEngine;
 public class Chunk : MonoBehaviour
 {
     public const int CHUNK_SIZE = 16;
-
-    public float startX;
-    public float startZ;
-
     private const float _scaleFactor = 20f;
     private const float _worldScale = 5f;
     private const float _steepnessScale = 200f;
@@ -21,27 +17,30 @@ public class Chunk : MonoBehaviour
     private static Dictionary<Tuple<int, int>, int> allCubePositions = new Dictionary<Tuple<int, int>, int>();
     private Dictionary<Tuple<int, int>, int> localCubePosition = new Dictionary<Tuple<int, int>, int>();
 
+    public float StartX { get; private set; }
+
+    public float StartZ { get; private set; }
+
     // Start is called before the first frame update
     void Start()
     {
-        startX = gameObject.transform.position.x;
-        startZ = gameObject.transform.position.z;
-        BiomeTypeEnum biome = BiomeManager.GetBiome(startX, startZ);
-
+        StartX = gameObject.transform.position.x;
+        StartZ = gameObject.transform.position.z;
+        BiomeTypeEnum biome = BiomeManager.GetBiome(StartX, StartZ);
         for (int i = 0; i < CHUNK_SIZE; ++i)
         {
             for (int j = 0; j < CHUNK_SIZE; ++j)
             {
-                float newX = (startX + i + _offset) / _scaleFactor;
-                float newZ = (startZ + j + _offset) / _scaleFactor;
+                float newX = (StartX + i + _offset) / _scaleFactor;
+                float newZ = (StartZ + j + _offset) / _scaleFactor;
 
                 // this essentially allows us to generate the steepness. Dividing by _worldScale
                 // allows us to have plains and montains because the steepness spans over a longer distance
                 float steepnessY = perlin.DoPerlin(newX / _worldScale, newZ / _worldScale) * _steepnessScale;
                 float totalY =  perlin.DoPerlin(newX, newZ) * steepnessY;
-                Vector3 pos = new Vector3(startX + i, (int)totalY, startZ + j);
-                localCubePosition.Add(new Tuple<int, int>((int)startX + i, (int)startZ + j), (int) totalY);
-                allCubePositions.Add(new Tuple<int, int>((int)startX + i, (int)startZ + j), (int)totalY);                
+                Vector3 pos = new Vector3(StartX + i, (int)totalY, StartZ + j);
+                localCubePosition.Add(new Tuple<int, int>((int)StartX + i, (int)StartZ + j), (int) totalY);
+                allCubePositions.Add(new Tuple<int, int>((int)StartX + i, (int)StartZ + j), (int)totalY);                
                 PrefabType prefabType;
                 switch (biome)
                 {
@@ -65,7 +64,7 @@ public class Chunk : MonoBehaviour
         }
 
         BuildColumns();
-
+        enabled = false;
     }
 
     // Update is called once per frame
@@ -76,7 +75,7 @@ public class Chunk : MonoBehaviour
 
     public bool IsPositionInChunk(Vector3 pos)
     {
-        return pos.x > startX && pos.x < startX + CHUNK_SIZE && pos.z > startZ && pos.z < startZ + CHUNK_SIZE;
+        return pos.x > StartX && pos.x < StartX + CHUNK_SIZE && pos.z > StartZ && pos.z < StartZ + CHUNK_SIZE;
     }
 
     public string GetKey()
@@ -108,7 +107,7 @@ public class Chunk : MonoBehaviour
 
                         if (diffHeight > 1)
                         {
-                            for (int k = 1; k < diffHeight; ++k)
+                            for (int k = 1; k <= diffHeight; ++k)
                             {
                                 Vector3 newPos = new Vector3(cubePosition.Key.Item1, cubePosition.Value - k, cubePosition.Key.Item2);
                                 Instantiate(PrefabManager.GetPrefab(PrefabType.GRASS)).transform.SetPositionAndRotation(newPos, new Quaternion());
@@ -119,4 +118,6 @@ public class Chunk : MonoBehaviour
             }
         }
     }
+
+
 }
