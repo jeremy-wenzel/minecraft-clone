@@ -32,6 +32,21 @@ namespace Assets.Scripts
         /// </summary>
         private void SetTranslation()
         {
+            // TODO: This should go somewhere else
+            bool isRestart = Input.GetKey(KeyCode.P);
+            if (isRestart)
+            {
+                this.transform.SetPositionAndRotation(new Vector3(0, 8, 0), new Quaternion());
+                return;
+            }
+
+            // TODO: This should go somewhere else
+            bool exit = Input.GetKey(KeyCode.Escape);
+            if (exit)
+            {
+                Application.Quit();
+            }
+
             bool isSprinting = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
             bool isJumping = Input.GetKey(KeyCode.Space);
             float xTranslate = Input.GetAxis("Horizontal");

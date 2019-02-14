@@ -7,6 +7,7 @@ public class Spawner : MonoBehaviour
 
     private const int INIT_SIZE = 10;
     private Chunk currentChunk = null;
+    private const int BUILD_WIDTH = 3;
 
     // Start is called before the first frame update
     void Start()
@@ -48,8 +49,8 @@ public class Spawner : MonoBehaviour
 
             if (Mathf.Abs(xDiff) > 0)
             {
-                float xOffset = (xDiff > 0 ? 1 : -1) * Chunk.CHUNK_SIZE * 5;
-                for (float offset = -Chunk.CHUNK_SIZE * 5; offset < Chunk.CHUNK_SIZE * 5; offset += Chunk.CHUNK_SIZE)
+                float xOffset = (xDiff > 0 ? 1 : -1) * Chunk.CHUNK_SIZE * BUILD_WIDTH;
+                for (float offset = -Chunk.CHUNK_SIZE * BUILD_WIDTH; offset < Chunk.CHUNK_SIZE * BUILD_WIDTH; offset += Chunk.CHUNK_SIZE)
                 {
                     Vector3 pos = new Vector3(currentChunk.StartX + xOffset, 0, currentChunk.StartZ + offset);
                     if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
@@ -61,8 +62,8 @@ public class Spawner : MonoBehaviour
             }
             else if (Mathf.Abs(zDiff) > 0)
             {
-                float zOffset = (zDiff > 0 ? 1 : -1) * Chunk.CHUNK_SIZE * 5;
-                for (float offset = -Chunk.CHUNK_SIZE * 5; offset < Chunk.CHUNK_SIZE * 5; offset += Chunk.CHUNK_SIZE)
+                float zOffset = (zDiff > 0 ? 1 : -1) * Chunk.CHUNK_SIZE * BUILD_WIDTH;
+                for (float offset = -Chunk.CHUNK_SIZE * BUILD_WIDTH; offset < Chunk.CHUNK_SIZE * BUILD_WIDTH; offset += Chunk.CHUNK_SIZE)
                 {
                     Vector3 pos = new Vector3(currentChunk.StartX + offset, 0, currentChunk.StartZ + zOffset);
                     if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
