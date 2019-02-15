@@ -1,4 +1,6 @@
 ﻿using Assets.Scripts;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
@@ -7,20 +9,24 @@ public class Spawner : MonoBehaviour
 
     private const int INIT_SIZE = 10;
     private Chunk currentChunk = null;
-    private const int BUILD_WIDTH = 3;
+    private const int BUILD_WIDTH = 5;
+    private HashSet<Chunk> visibleChunks = new HashSet<Chunk>();
 
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = -INIT_SIZE; i <= INIT_SIZE; i++)
+        for (int i = -BUILD_WIDTH; i < BUILD_WIDTH; i++)
         {
-            for (int j = -INIT_SIZE; j <= INIT_SIZE; j++)
+            for (int j = -BUILD_WIDTH; j < BUILD_WIDTH; j++)
             {
                 // TODO: Refactor to a method
                 var newChunk = Instantiate(PrefabManager.GetPrefab(PrefabType.CHUNK), 
                     new Vector3(i * Chunk.CHUNK_SIZE, 0, j * Chunk.CHUNK_SIZE), 
                     new Quaternion());
-                ChunkManager.AddChunk((Chunk)newChunk.GetComponent(typeof(Chunk)));
+                var chunk = (Chunk)newChunk.GetComponent(typeof(Chunk));
+                ChunkManager.AddChunk(chunk);
+                visibleChunks.Add(chunk);
+
             }
         }
 
@@ -31,49 +37,50 @@ public class Spawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TODO: THere is a bug in here where we are not setting the current chunk correctly which means
-        // that we do this iteration
         if (!currentChunk.IsPositionInChunk(player.transform.position))
         {
+            Debug.Log("Resetting chunk");
             Chunk newChunk = ChunkManager.GetChunkWithKey(Chunk.GetKey(player.transform.position));
 
             if (newChunk == null)
             {
-                Debug.Log($"NewChunk null, player position = {player.transform.position}");
+                Debug.LogWarning($"NewChunk null, player position = {player.transform.position} chunkKey = {Chunk.GetKey(player.transform.position)}");
                 return;
             }
 
             float xDiff = newChunk.StartX - currentChunk.StartX;
             float zDiff = newChunk.StartZ - currentChunk.StartZ;
 
+            HashSet<Chunk> newChunks = new HashSet<Chunk>();
+            for (float xOffset = -Chunk.CHUNK_SIZE * BUILD_WIDTH; xOffset < Chunk.CHUNK_SIZE * BUILD_WIDTH; xOffset += Chunk.CHUNK_SIZE)
+            {
+                for (float zOffset = -Chunk.CHUNK_SIZE * BUILD_WIDTH; zOffset < Chunk.CHUNK_SIZE * BUILD_WIDTH; zOffset += Chunk.CHUNK_SIZE)
+                {
+                    Vector3 pos = new Vector3(newChunk.StartX + xOffset, 0, newChunk.StartZ + zOffset);
+                    if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
+                    {
+                        var newChunkZ = Instantiate(PrefabManager.GetPrefab(PrefabType.CHUNK), pos, new Quaternion());
+                        var chunk = (Chunk)newChunkZ.GetComponent(typeof(Chunk));
+                        ChunkManager.AddChunk(chunk);
 
-            if (Mathf.Abs(xDiff) > 0)
-            {
-                float xOffset = (xDiff > 0 ? 1 : -1) * Chunk.CHUNK_SIZE * BUILD_WIDTH;
-                for (float offset = -Chunk.CHUNK_SIZE * BUILD_WIDTH; offset < Chunk.CHUNK_SIZE * BUILD_WIDTH; offset += Chunk.CHUNK_SIZE)
-                {
-                    Vector3 pos = new Vector3(currentChunk.StartX + xOffset, 0, currentChunk.StartZ + offset);
-                    if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
-                    {
-                        var newChunkZ = Instantiate(PrefabManager.GetPrefab(PrefabType.CHUNK), pos, new Quaternion());
-                        ChunkManager.AddChunk((Chunk)newChunkZ.GetComponent(typeof(Chunk)));
+                        newChunks.Add(chunk);
                     }
-                }
-            }
-            else if (Mathf.Abs(zDiff) > 0)
-            {
-                float zOffset = (zDiff > 0 ? 1 : -1) * Chunk.CHUNK_SIZE * BUILD_WIDTH;
-                for (float offset = -Chunk.CHUNK_SIZE * BUILD_WIDTH; offset < Chunk.CHUNK_SIZE * BUILD_WIDTH; offset += Chunk.CHUNK_SIZE)
-                {
-                    Vector3 pos = new Vector3(currentChunk.StartX + offset, 0, currentChunk.StartZ + zOffset);
-                    if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
+                    else
                     {
-                        var newChunkZ = Instantiate(PrefabManager.GetPrefab(PrefabType.CHUNK), pos, new Quaternion());
-                        ChunkManager.AddChunk((Chunk)newChunkZ.GetComponent(typeof(Chunk)));
+                        newChunks.Add(ChunkManager.GetChunkWithKey(Chunk.GetKey(pos)));
                     }
                 }
             }
 
+            foreach (Chunk c in visibleChunks)
+            {
+                if (!newChunks.Contains(c))
+                {
+                    ChunkManager.DestroyChunk(c);
+                    Destroy(c.gameObject);
+                }
+            }
+            visibleChunks = newChunks;
             currentChunk = newChunk;
         }
     }

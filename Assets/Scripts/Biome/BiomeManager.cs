@@ -27,7 +27,6 @@ public class BiomeManager : Singleton<BiomeManager>
             // Just make a random one
             System.Random rand = new System.Random();
             int value = rand.Next() % 2;
-            Debug.Log($"new random {value}");
             BiomeTypeEnum newBiome;
             switch (value)
             {

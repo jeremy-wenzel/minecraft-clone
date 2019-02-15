@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
@@ -29,6 +30,7 @@ namespace Assets.Scripts
         {
             if (!ChunkExists(key))
             {
+                Debug.LogWarning($"Chunk does not exist for {key}");
                 return null;
             }
 
@@ -38,6 +40,14 @@ namespace Assets.Scripts
         public static void AddChunk(Chunk chunk)
         {
             _totalChunks.Add(chunk.GetKey(), chunk);
+        }
+
+        public static void DestroyChunk(Chunk chunk)
+        {
+            if (_totalChunks.ContainsKey(chunk.GetKey()))
+            {
+                _totalChunks.Remove(chunk.GetKey());
+            }
         }
     }
 }

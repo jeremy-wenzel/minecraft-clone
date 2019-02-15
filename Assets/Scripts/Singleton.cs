@@ -13,19 +13,23 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     protected static T GetInstance()
     {
-        lock(_lock)
+        if (_instance == null)
         {
-            // Looks for the objects in the scene
-            _instance = (T)FindObjectOfType(typeof(T));
-
-            // If it can't find the object, create and add the component.
-            if (_instance == null)
+            lock (_lock)
             {
-                var gameObject = new GameObject();
-                _instance = gameObject.AddComponent<T>();
-                _instance.name =  $"{typeof(T)} (SingleTone)";
+                // Looks for the objects in the scene
+                _instance = (T)FindObjectOfType(typeof(T));
+
+                // If it can't find the object, create and add the component.
+                if (_instance == null)
+                {
+                    var gameObject = new GameObject();
+                    _instance = gameObject.AddComponent<T>();
+                    _instance.name = $"{typeof(T)} (SingleTone)";
+                }
             }
         }
+        
 
         return _instance;
     }

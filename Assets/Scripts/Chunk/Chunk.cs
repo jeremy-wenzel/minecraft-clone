@@ -16,7 +16,7 @@ public class Chunk : MonoBehaviour
 
     private static Dictionary<Tuple<int, int>, int> allCubePositions = new Dictionary<Tuple<int, int>, int>();
     private Dictionary<Tuple<int, int>, int> localCubePosition = new Dictionary<Tuple<int, int>, int>();
-
+    private HashSet<GameObject> cubes = new HashSet<GameObject>();
     public float StartX { get; private set; }
 
     public float StartZ { get; private set; }
@@ -59,7 +59,9 @@ public class Chunk : MonoBehaviour
                         UnityEngine.Debug.Log($"Unknown BiomeType {biome}");
                         break;
                 }
-                Instantiate(PrefabManager.GetPrefab(prefabType)).transform.SetPositionAndRotation(pos, new Quaternion());
+                GameObject gameO = Instantiate(PrefabManager.GetPrefab(prefabType));
+                gameO.transform.SetPositionAndRotation(pos, new Quaternion());
+                cubes.Add(gameO);
             }
         }
 
@@ -73,9 +75,25 @@ public class Chunk : MonoBehaviour
         
     }
 
+    private void OnDestroy()
+    {
+        Debug.Log($"Destroying chunk key = {GetKey()}");
+        foreach (GameObject o in cubes)
+        {
+            Destroy(o);
+        }
+        foreach (KeyValuePair<Tuple<int, int>, int> position in localCubePosition)
+        {
+            allCubePositions.Remove(position.Key);
+        }
+
+        cubes.Clear();
+        localCubePosition.Clear();
+    }
+
     public bool IsPositionInChunk(Vector3 pos)
     {
-        return pos.x > StartX && pos.x < StartX + CHUNK_SIZE && pos.z > StartZ && pos.z < StartZ + CHUNK_SIZE;
+        return GetKey() == GetKey(pos);
     }
 
     public string GetKey()
@@ -88,6 +106,7 @@ public class Chunk : MonoBehaviour
         float x = position.x / CHUNK_SIZE;
         float z = position.z / CHUNK_SIZE;
 
+        //Debug.Log($"Chunk key = {x} {z}");
         return $"{x.ToString("f0")} {z.ToString("f0")}";
     }
 
