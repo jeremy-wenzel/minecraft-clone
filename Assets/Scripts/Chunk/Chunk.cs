@@ -14,9 +14,9 @@ public class Chunk : MonoBehaviour
     private const int SNOW_MAX_Y = 8;
     private static readonly Perlin perlin = new Perlin();
 
-    private static Dictionary<Tuple<int, int>, int> allCubePositions = new Dictionary<Tuple<int, int>, int>();
-    private Dictionary<Tuple<int, int>, int> localCubePosition = new Dictionary<Tuple<int, int>, int>();
-    private HashSet<GameObject> cubes = new HashSet<GameObject>();
+    private static Dictionary<Tuple<int, int>, Cube> allCubePositions = new Dictionary<Tuple<int, int>, Cube>();
+    private Dictionary<Tuple<int, int>, Cube> localCubePosition = new Dictionary<Tuple<int, int>, Cube>();
+
     public float StartX { get; private set; }
 
     public float StartZ { get; private set; }
@@ -39,8 +39,7 @@ public class Chunk : MonoBehaviour
                 float steepnessY = perlin.DoPerlin(newX / _worldScale, newZ / _worldScale) * _steepnessScale;
                 float totalY =  perlin.DoPerlin(newX, newZ) * steepnessY;
                 Vector3 pos = new Vector3(StartX + i, (int)totalY, StartZ + j);
-                localCubePosition.Add(new Tuple<int, int>((int)StartX + i, (int)StartZ + j), (int) totalY);
-                allCubePositions.Add(new Tuple<int, int>((int)StartX + i, (int)StartZ + j), (int)totalY);                
+                               
                 PrefabType prefabType;
                 switch (biome)
                 {
@@ -59,9 +58,8 @@ public class Chunk : MonoBehaviour
                         UnityEngine.Debug.Log($"Unknown BiomeType {biome}");
                         break;
                 }
-                GameObject gameO = Instantiate(PrefabManager.GetPrefab(prefabType));
-                gameO.transform.SetPositionAndRotation(pos, new Quaternion());
-                cubes.Add(gameO);
+                Cube cube = new Cube(Instantiate(PrefabManager.GetPrefab(prefabType), pos, new Quaternion()));
+                AddPositionToDictionaries(pos, cube);
             }
         }
 
@@ -78,16 +76,12 @@ public class Chunk : MonoBehaviour
     private void OnDestroy()
     {
         Debug.Log($"Destroying chunk key = {GetKey()}");
-        foreach (GameObject o in cubes)
+        foreach (KeyValuePair<Tuple<int, int>, Cube> localCube in localCubePosition)
         {
-            Destroy(o);
-        }
-        foreach (KeyValuePair<Tuple<int, int>, int> position in localCubePosition)
-        {
-            allCubePositions.Remove(position.Key);
+            Destroy(localCube.Value.gameObject);
+            allCubePositions.Remove(localCube.Key);
         }
 
-        cubes.Clear();
         localCubePosition.Clear();
     }
 
@@ -110,26 +104,34 @@ public class Chunk : MonoBehaviour
         return $"{x.ToString("f0")} {z.ToString("f0")}";
     }
 
+    private void AddPositionToDictionaries(Vector3 position, Cube cube)
+    {
+        Tuple<int, int> key = new Tuple<int, int>((int)position.x, (int)position.z);
+        localCubePosition.Add(key, cube);
+        allCubePositions.Add(key, cube); 
+    }
+
     private void BuildColumns()
     {
-        foreach(KeyValuePair<Tuple<int, int>, int> cubePosition in localCubePosition)
+        foreach(KeyValuePair<Tuple<int, int>, Cube> localCube in localCubePosition)
         {
             for (int i = -1; i <= 1; i+=2)
             {
                 for (int j = -1; j <= 1; j+=2)
                 {
-                    Tuple<int, int> adjacentPos = new Tuple<int, int>(cubePosition.Key.Item1 + i, cubePosition.Key.Item2 + j);
+                    Tuple<int, int> adjacentPos = new Tuple<int, int>(localCube.Key.Item1 + i, localCube.Key.Item2 + j);
                     if (allCubePositions.ContainsKey(adjacentPos))
                     {
-                        int adjacentHeight = allCubePositions[adjacentPos];
-                        int diffHeight = cubePosition.Value - adjacentHeight;
+                        int adjacentHeight = allCubePositions[adjacentPos].VerticalPosition;
+                        int diffHeight = localCube.Value.VerticalPosition - adjacentHeight;
 
                         if (diffHeight > 1)
                         {
                             for (int k = 1; k <= diffHeight; ++k)
                             {
-                                Vector3 newPos = new Vector3(cubePosition.Key.Item1, cubePosition.Value - k, cubePosition.Key.Item2);
-                                Instantiate(PrefabManager.GetPrefab(PrefabType.GRASS)).transform.SetPositionAndRotation(newPos, new Quaternion());
+                                Vector3 newPos = new Vector3(localCube.Key.Item1, localCube.Value.VerticalPosition - k, localCube.Key.Item2);
+                                Cube newCube = new Cube(Instantiate(PrefabManager.GetPrefab(PrefabType.GRASS), newPos, new Quaternion()));
+                                AddPositionToDictionaries(newPos, newCube);
                             }
                         }
                     }
