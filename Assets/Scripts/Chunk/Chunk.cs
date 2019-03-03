@@ -99,8 +99,7 @@ public class Chunk : MonoBehaviour
     {
         float x = position.x / CHUNK_SIZE;
         float z = position.z / CHUNK_SIZE;
-
-        //Debug.Log($"Chunk key = {x} {z}");
+        
         return $"{x.ToString("f0")} {z.ToString("f0")}";
     }
 
@@ -131,6 +130,7 @@ public class Chunk : MonoBehaviour
                             {
                                 Vector3 newPos = new Vector3(localCube.Key.Item1, localCube.Value.VerticalPosition - k, localCube.Key.Item2);
                                 Cube newCube = new Cube(Instantiate(PrefabManager.GetPrefab(PrefabType.GRASS), newPos, new Quaternion()));
+                                // This is where the bug lies. We need to find another way to build out the columns
                                 AddPositionToDictionaries(newPos, newCube);
                             }
                         }
