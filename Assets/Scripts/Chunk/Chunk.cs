@@ -44,17 +44,22 @@ public class Chunk : MonoBehaviour
                 switch (biome)
                 {
                     case BiomeTypeEnum.Grass:
-                        prefabType = PrefabType.GRASS;
+                        prefabType = PrefabType.Grass;
                         if (totalY > SNOW_MAX_Y)
                         {
-                            prefabType = PrefabType.SNOW;
+                            prefabType = PrefabType.Snow;
+                        }
+                        int x = UnityEngine.Random.Range(0, 500);
+                        if (x == 1)
+                        {
+                            prefabType = PrefabType.Tree;
                         }
                         break;
                     case BiomeTypeEnum.Snow:
-                        prefabType = PrefabType.SNOW;
+                        prefabType = PrefabType.Snow;
                         break;
                     default:
-                        prefabType = PrefabType.GRASS;
+                        prefabType = PrefabType.Grass;
                         UnityEngine.Debug.Log($"Unknown BiomeType {biome}");
                         break;
                 }
@@ -129,7 +134,7 @@ public class Chunk : MonoBehaviour
                             for (int k = 1; k <= diffHeight; ++k)
                             {
                                 Vector3 newPos = new Vector3(localCube.Key.Item1, localCube.Value.VerticalPosition - k, localCube.Key.Item2);
-                                Cube newCube = new Cube(Instantiate(PrefabManager.GetPrefab(PrefabType.GRASS), newPos, new Quaternion()));
+                                Cube newCube = new Cube(Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPos, new Quaternion()));
                                 // This is where the bug lies. We need to find another way to build out the columns
                                 AddPositionToDictionaries(newPos, newCube);
                             }
