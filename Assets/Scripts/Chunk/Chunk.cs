@@ -26,7 +26,7 @@ public class Chunk : MonoBehaviour
     {
         StartX = gameObject.transform.position.x;
         StartZ = gameObject.transform.position.z;
-        BiomeTypeEnum biome = BiomeManager.GetBiome(StartX, StartZ);
+        BaseBiome biome = BiomeManager.GetBiome(StartX, StartZ);
         for (int i = 0; i < CHUNK_SIZE; ++i)
         {
             for (int j = 0; j < CHUNK_SIZE; ++j)
@@ -39,43 +39,15 @@ public class Chunk : MonoBehaviour
                 float steepnessY = perlin.DoPerlin(newX / _worldScale, newZ / _worldScale) * _steepnessScale;
                 float totalY =  perlin.DoPerlin(newX, newZ) * steepnessY;
                 Vector3 pos = new Vector3(StartX + i, (int)totalY, StartZ + j);
-                               
-                PrefabType prefabType;
-                switch (biome)
-                {
-                    case BiomeTypeEnum.Grass:
-                        prefabType = PrefabType.Grass;
-                        if (totalY > SNOW_MAX_Y)
-                        {
-                            prefabType = PrefabType.Snow;
-                        }
-                        int x = UnityEngine.Random.Range(0, 500);
-                        if (x == 1)
-                        {
-                            prefabType = PrefabType.Tree;
-                        }
-                        break;
-                    case BiomeTypeEnum.Snow:
-                        prefabType = PrefabType.Snow;
-                        break;
-                    default:
-                        prefabType = PrefabType.Grass;
-                        UnityEngine.Debug.Log($"Unknown BiomeType {biome}");
-                        break;
-                }
-                Cube cube = new Cube(Instantiate(PrefabManager.GetPrefab(prefabType), pos, new Quaternion()));
+
+                GameObject prefab = biome.GetObjectForPosition(pos);
+                Cube cube = new Cube(Instantiate(prefab, pos, new Quaternion()));
                 AddPositionToDictionaries(pos, cube);
             }
         }
 
         BuildColumns();
         enabled = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     private void OnDestroy()

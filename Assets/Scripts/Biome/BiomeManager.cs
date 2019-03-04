@@ -1,5 +1,4 @@
-﻿using Assets.Scripts;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 
 public class BiomeManager : Singleton<BiomeManager>
@@ -7,9 +6,9 @@ public class BiomeManager : Singleton<BiomeManager>
     private static int X_RANGE = 100;
     private static int Z_RANGE = 100;
 
-    private static Dictionary<Tuple<float, float>, BiomeTypeEnum> BiomeDictionary = new Dictionary<Tuple<float, float>, BiomeTypeEnum>();
+    private static Dictionary<Tuple<float, float>, BaseBiome> BiomeDictionary = new Dictionary<Tuple<float, float>, BaseBiome>();
 
-    public static BiomeTypeEnum GetBiome(float x, float z)
+    public static BaseBiome GetBiome(float x, float z)
     {
         float cx = (int)x / X_RANGE;
         float cz = (int)z / Z_RANGE;
@@ -25,17 +24,17 @@ public class BiomeManager : Singleton<BiomeManager>
             // Just make a random one
             Random rand = new Random();
             int value = rand.Next() % 2;
-            BiomeTypeEnum newBiome;
+            BaseBiome newBiome;
             switch (value)
             {
                 case 0:
-                    newBiome = BiomeTypeEnum.Grass;
+                    newBiome = new GrassBiome();
                     break;
                 case 1:
-                    newBiome = BiomeTypeEnum.Snow;
+                    newBiome = new SnowBiome();
                     break;
                 default:
-                    newBiome = BiomeTypeEnum.Grass;
+                    newBiome = new GrassBiome();
                     break;
             }
 

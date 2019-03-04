@@ -484,6 +484,30 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4131123319776954786, guid: 24a3b6b634d963e418c54046ab35869d,
         type: 3}
+    - target: {fileID: 3503864339319056654, guid: 8781e1531d9066942abf0bb09f73af58,
+        type: 3}
+      propertyPath: Tree
+      value: 
+      objectReference: {fileID: 7169103660506014821, guid: 14e49450a2ae5aa4ea86c23164576071,
+        type: 3}
+    - target: {fileID: 3503864339319056654, guid: 8781e1531d9066942abf0bb09f73af58,
+        type: 3}
+      propertyPath: Chunk
+      value: 
+      objectReference: {fileID: 8658316215488820355, guid: 9de6b183b92e12b42ac1995ac25540f9,
+        type: 3}
+    - target: {fileID: 3503864339319056654, guid: 8781e1531d9066942abf0bb09f73af58,
+        type: 3}
+      propertyPath: Grass
+      value: 
+      objectReference: {fileID: 4131123319776954786, guid: 24a3b6b634d963e418c54046ab35869d,
+        type: 3}
+    - target: {fileID: 3503864339319056654, guid: 8781e1531d9066942abf0bb09f73af58,
+        type: 3}
+      propertyPath: Snow
+      value: 
+      objectReference: {fileID: 3711519314042309921, guid: 93ea85d8d2d74ea469df02ba1d324be0,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8781e1531d9066942abf0bb09f73af58, type: 3}
 --- !u!1001 &8269111220781317469
