@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
-    public const int CHUNK_SIZE = 16;
+    public const int CHUNK_SIZE = 8;
     private const float _scaleFactor = 20f;
     private const float _worldScale = 5f;
     private const float _steepnessScale = 200f;
@@ -50,7 +50,7 @@ public class Chunk : MonoBehaviour
 
     private void OnDestroy()
     {
-        Debug.Log($"Destroying chunk key = {GetKey()}");
+        //Debug.Log($"Destroying chunk key = {GetKey()}");
         foreach (KeyValuePair<Tuple<int, int>, Cube> localCube in localCubePosition)
         {
             CubeManager.AddGameObjectToPool(localCube.Value.gameObject);
@@ -69,14 +69,14 @@ public class Chunk : MonoBehaviour
         GameObject objectToSpawn;
         if (CubeManager.HasGameObjectOfPrefab(prefab))
         {
-            Debug.Log("Using CubeManager");
+            //Debug.Log("Using CubeManager");
             objectToSpawn = CubeManager.GetGameObjectOfFromPool(prefab);
             objectToSpawn.transform.SetPositionAndRotation(position, new Quaternion());
             objectToSpawn.SetActive(true);
         }
         else
         {
-            Debug.Log("Creating new GameObject");
+            //Debug.Log("Creating new GameObject");
             objectToSpawn = Instantiate(prefab, position, new Quaternion());
         }
         Cube cube = new Cube(objectToSpawn);

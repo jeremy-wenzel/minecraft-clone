@@ -20,7 +20,7 @@ public class Spawner : MonoBehaviour
             for (int j = -BUILD_WIDTH; j < BUILD_WIDTH; j++)
             {
                 // TODO: Refactor to a method
-                var newChunk = Instantiate(PrefabManager.GetPrefab(PrefabType.Chunk), 
+                var newChunk = Instantiate(PrefabManager.GetPrefab(PrefabType.CHUNK), 
                     new Vector3(i * Chunk.CHUNK_SIZE, 0, j * Chunk.CHUNK_SIZE), 
                     new Quaternion());
                 var chunk = (Chunk)newChunk.GetComponent(typeof(Chunk));
@@ -59,7 +59,7 @@ public class Spawner : MonoBehaviour
                     Vector3 pos = new Vector3(newChunk.StartX + xOffset, 0, newChunk.StartZ + zOffset);
                     if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
                     {
-                        var newChunkZ = Instantiate(PrefabManager.GetPrefab(PrefabType.Chunk), pos, new Quaternion());
+                        var newChunkZ = Instantiate(PrefabManager.GetPrefab(PrefabType.CHUNK), pos, new Quaternion());
                         var chunk = (Chunk)newChunkZ.GetComponent(typeof(Chunk));
                         ChunkManager.AddChunk(chunk);
 
