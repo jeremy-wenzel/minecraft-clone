@@ -5,7 +5,7 @@ namespace Assets.Scripts
 {
     public class Cube
     {
-        public GameObject gameObject { get; private set; }
+        public GameObject gameObject { get; set; }
 
         public int VerticalPosition => (int)gameObject.transform.position.y;
 
@@ -13,8 +13,5 @@ namespace Assets.Scripts
         {
             this.gameObject = gameObject;
         }
-
-
-
     }
 }   

@@ -40,9 +40,7 @@ public class Chunk : MonoBehaviour
                 float totalY =  perlin.DoPerlin(newX, newZ) * steepnessY;
                 Vector3 pos = new Vector3(StartX + i, (int)totalY, StartZ + j);
 
-                GameObject prefab = biome.GetObjectForPosition(pos);
-                Cube cube = new Cube(Instantiate(prefab, pos, new Quaternion()));
-                AddPositionToDictionaries(pos, cube);
+                CreateGameObject(biome, pos);
             }
         }
 
@@ -55,11 +53,34 @@ public class Chunk : MonoBehaviour
         Debug.Log($"Destroying chunk key = {GetKey()}");
         foreach (KeyValuePair<Tuple<int, int>, Cube> localCube in localCubePosition)
         {
-            Destroy(localCube.Value.gameObject);
+            CubeManager.AddGameObjectToPool(localCube.Value.gameObject);
+            localCube.Value.gameObject.SetActive(false);
+            localCube.Value.gameObject = null;
+            //Destroy(localCube.Value.gameObject);
             allCubePositions.Remove(localCube.Key);
         }
 
         localCubePosition.Clear();
+    }
+
+    private void CreateGameObject(BaseBiome biome, Vector3 position)
+    {
+        GameObject prefab = biome.GetObjectForPosition(position);
+        GameObject objectToSpawn;
+        if (CubeManager.HasGameObjectOfPrefab(prefab))
+        {
+            Debug.Log("Using CubeManager");
+            objectToSpawn = CubeManager.GetGameObjectOfFromPool(prefab);
+            objectToSpawn.transform.SetPositionAndRotation(position, new Quaternion());
+            objectToSpawn.SetActive(true);
+        }
+        else
+        {
+            Debug.Log("Creating new GameObject");
+            objectToSpawn = Instantiate(prefab, position, new Quaternion());
+        }
+        Cube cube = new Cube(objectToSpawn);
+        AddPositionToDictionaries(position, cube);
     }
 
     public bool IsPositionInChunk(Vector3 pos)
@@ -108,7 +129,7 @@ public class Chunk : MonoBehaviour
                                 Vector3 newPos = new Vector3(localCube.Key.Item1, localCube.Value.VerticalPosition - k, localCube.Key.Item2);
                                 Cube newCube = new Cube(Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPos, new Quaternion()));
                                 // This is where the bug lies. We need to find another way to build out the columns
-                                AddPositionToDictionaries(newPos, newCube);
+                                //AddPositionToDictionaries(newPos, newCube);
                             }
                         }
                     }
