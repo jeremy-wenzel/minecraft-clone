@@ -4,12 +4,12 @@ using System;
 
 public class CubeManager
 {
-    private static Dictionary<String, Stack<GameObject>> GameObjectPool = new Dictionary<string, Stack<GameObject>>();
+    private static Dictionary<String, Stack<GameObject>> gameObjectPool = new Dictionary<string, Stack<GameObject>>();
 
     public static bool HasGameObjectOfPrefab(GameObject prefab)
     {
-        return GameObjectPool.ContainsKey(prefab.tag) && 
-            GameObjectPool[prefab.tag].HasValues();
+        return gameObjectPool.ContainsKey(prefab.tag) && 
+            gameObjectPool[prefab.tag].HasValues();
     }
 
     public static GameObject GetGameObjectOfFromPool(GameObject prefab)
@@ -20,16 +20,16 @@ public class CubeManager
             throw new InvalidOperationException($"CubeManager does not have game object of prefab {prefab.tag}");
         }
 
-        return GameObjectPool[prefab.tag].Pop();
+        return gameObjectPool[prefab.tag].Pop();
     }
 
     public static void AddGameObjectToPool(GameObject gameObject)
     {
-        if (!GameObjectPool.ContainsKey(gameObject.tag))
+        if (!gameObjectPool.ContainsKey(gameObject.tag))
         {
-            GameObjectPool[gameObject.tag] = new Stack<GameObject>();
+            gameObjectPool[gameObject.tag] = new Stack<GameObject>();
         }
 
-        GameObjectPool[gameObject.tag].Push(gameObject);
+        gameObjectPool[gameObject.tag].Push(gameObject);
     }
 }

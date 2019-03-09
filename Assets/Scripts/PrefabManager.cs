@@ -11,7 +11,7 @@ public class PrefabManager: Singleton<PrefabManager>
     {
         switch(prefabType)
         {
-            case PrefabType.CHUNK:
+            case PrefabType.Chunk:
                 return GetInstance().Chunk;
             case PrefabType.Grass:
                 return GetInstance().Grass;
@@ -28,7 +28,7 @@ public class PrefabManager: Singleton<PrefabManager>
 
 public enum PrefabType
 {
-    CHUNK,
+    Chunk,
     Grass,
     Snow,
     Tree

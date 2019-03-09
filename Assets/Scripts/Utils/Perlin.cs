@@ -8,25 +8,25 @@ namespace Assets.Scripts
 {
     public class Perlin
     {
-        private const int _xMax = 256;
-        private const int _yMax = 256;
-        private float[, ,] _gradient;
+        private const int xMax = 256;
+        private const int yMax = 256;
+        private float[, ,] gradient;
 
         public Perlin()
         {
-            _gradient = new float[_xMax, _yMax, 2];
+            gradient = new float[xMax, yMax, 2];
             GeneratePerlin();
         }
 
         private void GeneratePerlin()
         {
             Random random = new Random();
-            for (int i = 0; i < _xMax; ++i)
+            for (int i = 0; i < xMax; ++i)
             {
-                for (int j = 0; j < _yMax; ++j)
+                for (int j = 0; j < yMax; ++j)
                 {
-                    _gradient[i, j, 0] = random.Next() / (int.MaxValue / 2) - 1.0f;
-                    _gradient[i, j, 1] = random.Next() / (int.MaxValue / 2) - 1.0f;
+                    gradient[i, j, 0] = random.Next() / (int.MaxValue / 2) - 1.0f;
+                    gradient[i, j, 1] = random.Next() / (int.MaxValue / 2) - 1.0f;
                 }
             }
         }
@@ -41,10 +41,10 @@ namespace Assets.Scripts
             float dx = x - (float)ix;
             float dy = y - (float)iy;
 
-            ix = Math.Abs(ix % _xMax);
-            iy = Math.Abs(iy % _yMax);
+            ix = Math.Abs(ix % xMax);
+            iy = Math.Abs(iy % yMax);
 
-            return (dx * _gradient[iy, ix, 0] + dy * _gradient[iy, ix, 1]);
+            return (dx * gradient[iy, ix, 0] + dy * gradient[iy, ix, 1]);
         }
 
         public float DoPerlin(float x, float y)

@@ -5,10 +5,6 @@ public class FirstPersonCamera : MonoBehaviour
     // The target to keep the camera on
     public const int ROT_SPEED = 10;
 
-    public GameObject playerObject;
-
-    private bool _isPlayerJumping;
-
     // Start is called before the first frame update
     void Start()
     {

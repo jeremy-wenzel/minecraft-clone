@@ -6,7 +6,8 @@ public class BiomeManager : Singleton<BiomeManager>
     private static int X_RANGE = 100;
     private static int Z_RANGE = 100;
 
-    private static Dictionary<Tuple<float, float>, BaseBiome> BiomeDictionary = new Dictionary<Tuple<float, float>, BaseBiome>();
+    private static Dictionary<Tuple<float, float>, BaseBiome> biomeDictionary = new Dictionary<Tuple<float, float>, BaseBiome>();
+    private static Random rand = new Random();
 
     public static BaseBiome GetBiome(float x, float z)
     {
@@ -15,14 +16,13 @@ public class BiomeManager : Singleton<BiomeManager>
 
         Tuple<float, float> position = new Tuple<float, float>(cx, cz);
 
-        if (BiomeDictionary.ContainsKey(position))
+        if (biomeDictionary.ContainsKey(position))
         {
-            return BiomeDictionary[position];
+            return biomeDictionary[position];
         }
         else
         {
             // Just make a random one
-            Random rand = new Random();
             int value = rand.Next() % 2;
             BaseBiome newBiome;
             switch (value)
@@ -38,7 +38,7 @@ public class BiomeManager : Singleton<BiomeManager>
                     break;
             }
 
-            BiomeDictionary[position] = newBiome;
+            biomeDictionary[position] = newBiome;
             return newBiome;
         }
     }

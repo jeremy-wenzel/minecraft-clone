@@ -9,7 +9,7 @@ namespace Assets.Scripts
 {
     sealed class ChunkManager
     {
-        private static Dictionary<string, Chunk> _totalChunks = new Dictionary<string, Chunk>();
+        private static Dictionary<string, Chunk> totalChunks = new Dictionary<string, Chunk>();
 
         private ChunkManager()
         {
@@ -23,7 +23,7 @@ namespace Assets.Scripts
 
         public static bool ChunkExists(string key)
         {
-            return _totalChunks.ContainsKey(key);
+            return totalChunks.ContainsKey(key);
         }
 
         public static Chunk GetChunkWithKey(string key)
@@ -34,19 +34,19 @@ namespace Assets.Scripts
                 return null;
             }
 
-            return _totalChunks[key];
+            return totalChunks[key];
         }
 
         public static void AddChunk(Chunk chunk)
         {
-            _totalChunks.Add(chunk.GetKey(), chunk);
+            totalChunks.Add(chunk.GetKey(), chunk);
         }
 
         public static void DestroyChunk(Chunk chunk)
         {
-            if (_totalChunks.ContainsKey(chunk.GetKey()))
+            if (totalChunks.ContainsKey(chunk.GetKey()))
             {
-                _totalChunks.Remove(chunk.GetKey());
+                totalChunks.Remove(chunk.GetKey());
             }
         }
     }

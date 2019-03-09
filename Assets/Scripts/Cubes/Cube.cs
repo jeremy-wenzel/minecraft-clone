@@ -8,11 +8,13 @@ namespace Assets.Scripts
     {
         public int Y => (int)gameObject.transform.position.y;
 
-        public Chunk ParentChunk { get; set; }
+        private Chunk ParentChunk;
 
         public void DeleteFromChunk()
         {
             ParentChunk.DeleteCube(this);
+            ParentChunk = null;
+            gameObject.SetActive(false);
         }
 
         public Tuple<int, int> GetCoordinates()
@@ -20,6 +22,12 @@ namespace Assets.Scripts
             int x = (int)gameObject.transform.position.x;
             int z = (int)gameObject.transform.position.z;
             return new Tuple<int, int>(x, z);
+        }
+
+        public void Spawn(Chunk parentChunk)
+        {
+            this.ParentChunk = parentChunk;
+            this.gameObject.SetActive(true);
         }
     }
 }   
