@@ -76,7 +76,7 @@ public class Spawner : MonoBehaviour
             {
                 if (!newChunks.Contains(c))
                 {
-                    ChunkManager.DestroyChunk(c);
+                    ChunkManager.RemoveChunk(c);
                     Destroy(c.gameObject);
                 }
             }

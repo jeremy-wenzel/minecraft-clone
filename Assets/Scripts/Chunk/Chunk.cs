@@ -16,7 +16,7 @@ public class Chunk : MonoBehaviour
     #endregion Constants
 
     #region Static variables
-    private static Dictionary<Tuple<int, int>, int> allCubePositions = new Dictionary<Tuple<int, int>, int>();
+    private static Dictionary<Tuple<int, int>, int> allColumnHeights = new Dictionary<Tuple<int, int>, int>();
     private static HashSet<Vector3> allVectors = new HashSet<Vector3>();
     #endregion Static Variables
 
@@ -60,13 +60,12 @@ public class Chunk : MonoBehaviour
 
     private void OnDestroy()
     {
-        //Debug.Log($"Destroying chunk key = {GetKey()}");
         foreach (Tuple<int, int> position in localCubePosition)
         {
-            allCubePositions.Remove(position);
+            allColumnHeights.Remove(position);
         }
 
-        // We need to make a shallow copy because the localCube is deleting from the localCubePositions
+        // We need to make a shallow copy because the localCube is deleting from the localCubes
         foreach (Cube localCube in localCubes.ToArray())
         {
             if (localCube != null)
@@ -81,6 +80,11 @@ public class Chunk : MonoBehaviour
 
     #region Cube Creation methods
 
+    /// <summary>
+    /// Creates the Cube
+    /// </summary>
+    /// <param name="biome"></param>
+    /// <param name="position"></param>
     private void CreateGameObject(BaseBiome biome, Vector3 position)
     {
         GameObject prefab = biome.GetObjectForPosition(position);
@@ -100,6 +104,15 @@ public class Chunk : MonoBehaviour
         AddPositionToDictionaries(position, cube);
     }
 
+    /// <summary>
+    /// Builds out the columns from (StartX - 1 , StartZ - 1) to (StartX + CHUNK_SIZE, StartZ + CHUNK_SIZE)
+    /// What this means is that we will recompute columns on the edge of other Chunks surrounding this chunk.
+    /// This needs to happen in case we run into a situation where we have a column that is shorter in this chunk
+    /// but ther chunk's columns have already been computed chunks.
+    /// 
+    /// This took me forever to get the math right so I can understand that figuring out what is going on is hard.
+    /// Sorry future me if you're reading this.
+    /// </summary>
     private void BuildColumns()
     {
         for (int x = (int)StartX - 1; x <= StartX + CHUNK_SIZE; ++x)
@@ -107,7 +120,7 @@ public class Chunk : MonoBehaviour
             for (int z = (int)StartZ - 1; z <= StartZ + CHUNK_SIZE; ++z)
             {
                 Tuple<int, int> position = new Tuple<int, int>(x, z);
-                if (allCubePositions.ContainsKey(position))
+                if (allColumnHeights.ContainsKey(position))
                 {
                     BuildColumnForPosition(position);
                 }
@@ -115,10 +128,14 @@ public class Chunk : MonoBehaviour
         }   
     }
 
+    /// <summary>
+    /// Builds the column of cubes needed to make sure there are no gaps
+    /// </summary>
+    /// <param name="position"></param>
     private void BuildColumnForPosition(Tuple<int, int> position)
     {
         int minimumHeight = ComputeMinHeight(position);
-        int currentHeight = allCubePositions[position];
+        int currentHeight = allColumnHeights[position];
         if (minimumHeight > 0)
         {
             for (int i = 0; i < minimumHeight; i++)
@@ -136,15 +153,20 @@ public class Chunk : MonoBehaviour
 
     private static int[] xArr = new int[] { 0, 1, 0, -1 };
     private static int[] zArr = new int[] { 1, 0, -1, 0 };
+    /// <summary>
+    /// Computes the minimum height needed to be built for a column
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     private int ComputeMinHeight(Tuple<int, int> position)
     {
         int minimumHeight = -9999999;
-        for (int i = 0; i < xArr.Length; i++)
+        for (int i = 0; i < xArr.Length; i++) // This is a competitve programming trick to easily access adjecent memebers
         {
             Tuple<int, int> adjacentPosition = new Tuple<int, int>(position.Item1 + xArr[i], position.Item2 + zArr[i]);
-            if (allCubePositions.ContainsKey(adjacentPosition))
+            if (allColumnHeights.ContainsKey(adjacentPosition))
             {
-                int distance = Math.Abs(allCubePositions[position] - allCubePositions[adjacentPosition]);
+                int distance = Math.Abs(allColumnHeights[position] - allColumnHeights[adjacentPosition]);
                 if (distance > minimumHeight)
                 {
                     minimumHeight = distance;
@@ -155,12 +177,17 @@ public class Chunk : MonoBehaviour
         return minimumHeight;
     }
 
+    /// <summary>
+    /// Adds position and cube to appropriate directories
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="cube"></param>
     private void AddPositionToDictionaries(Vector3 position, Cube cube)
     {
         Tuple<int, int> key = new Tuple<int, int>((int)position.x, (int)position.z);
         localCubePosition.Add(key);
         localCubes.Add(cube);
-        allCubePositions.Add(key, (int)position.y);
+        allColumnHeights.Add(key, (int)position.y);
         allVectors.Add(position);
     }
 
@@ -168,9 +195,12 @@ public class Chunk : MonoBehaviour
 
     #region Cube Deletion Methods
 
+    /// <summary>
+    /// Removes the cube from Chunk.
+    /// </summary>
+    /// <param name="cube"></param>
     public void DeleteCube(Cube cube)
     {
-        
         if (localCubes.Contains(cube))
         {
             localCubes.Remove(cube);
@@ -185,16 +215,31 @@ public class Chunk : MonoBehaviour
 
     #region Position Related Methods
 
+    /// <summary>
+    /// Is the position currently in the chunk? Determines if the x and z are both
+    /// inside of the chunk. We don't care about y.
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
     public bool IsPositionInChunk(Vector3 pos)
     {
         return GetKey() == GetKey(pos);
     }
 
+    /// <summary>
+    /// Gets the position key for the current chunk
+    /// </summary>
+    /// <returns></returns>
     public string GetKey()
     {
         return GetKey(gameObject.transform.position);
     }
 
+    /// <summary>
+    /// Takes in a Vector3 to generate a key that represents the Chunks position.
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     public static string GetKey(Vector3 position)
     {
         float x = position.x / CHUNK_SIZE;

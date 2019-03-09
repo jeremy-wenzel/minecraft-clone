@@ -3,12 +3,19 @@ using System;
 
 public class BiomeManager : Singleton<BiomeManager>
 {
-    private static int X_RANGE = 100;
-    private static int Z_RANGE = 100;
+    private const int X_RANGE = 100;
+    private const int Z_RANGE = 100;
 
     private static Dictionary<Tuple<float, float>, BaseBiome> biomeDictionary = new Dictionary<Tuple<float, float>, BaseBiome>();
     private static Random rand = new Random();
 
+    /// <summary>
+    /// Gets the biome from the local positions. Will cache previously created biomes so they
+    /// are not constantly regenerated
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="z"></param>
+    /// <returns></returns>
     public static BaseBiome GetBiome(float x, float z)
     {
         float cx = (int)x / X_RANGE;

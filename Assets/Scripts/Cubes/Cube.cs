@@ -10,6 +10,9 @@ namespace Assets.Scripts
 
         private Chunk ParentChunk;
 
+        /// <summary>
+        /// Removes the Cube from the Chunk and disables it's gameobject
+        /// </summary>
         public void DeleteFromChunk()
         {
             ParentChunk.DeleteCube(this);
@@ -17,16 +20,14 @@ namespace Assets.Scripts
             gameObject.SetActive(false);
         }
 
-        public Tuple<int, int> GetCoordinates()
-        {
-            int x = (int)gameObject.transform.position.x;
-            int z = (int)gameObject.transform.position.z;
-            return new Tuple<int, int>(x, z);
-        }
-
+        /// <summary>
+        /// Activate the gameobject
+        /// </summary>
+        /// <param name="parentChunk"></param>
         public void Spawn(Chunk parentChunk)
         {
             this.ParentChunk = parentChunk;
+            // TODO: Should we check if the object is already active so we are not reactivating?
             this.gameObject.SetActive(true);
         }
     }
