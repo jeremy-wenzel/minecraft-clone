@@ -8,12 +8,35 @@ namespace Assets.Scripts
         public const int SPRINT_SPEED = 2;
         public const int FORCE_MULTIPLIER = 500;
 
-        private bool _isPlayerJumping = false;
+        public Camera camera;
+
+        private bool isPlayerJumping = false;
 
         private void Update()
         {
+            HandleAction();
             SetTranslation();
             MaintainUpgrightRotation();
+        }
+
+        private void HandleAction()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit) && hit.distance < 3f)
+                {
+                    Debug.Log("Looking at " + hit.transform.tag);
+                    Cube cube = hit.transform.gameObject.GetComponent<Cube>();
+                    if (cube == null)
+                    {
+                        Debug.LogError("gameobject {hit.transform.tag} is not cube type");
+                        return;
+                    }
+                    cube.DeleteFromChunk();
+                }
+            }
         }
 
         /// <summary>
@@ -57,9 +80,9 @@ namespace Assets.Scripts
                 trans *= SPRINT_SPEED;
             }
 
-            if (!_isPlayerJumping && isJumping)
+            if (!isPlayerJumping && isJumping)
             {
-                _isPlayerJumping = true;
+                isPlayerJumping = true;
                 Rigidbody rb = gameObject.GetComponent<Rigidbody>();
                 rb.AddRelativeForce(Vector3.up * FORCE_MULTIPLIER);
             }
@@ -70,7 +93,7 @@ namespace Assets.Scripts
         private void OnCollisionEnter(Collision collision)
         {
             // TODO: I don't like this but I am not sure of a better way.
-            _isPlayerJumping = false;
+            isPlayerJumping = false;
         }
     }
 }

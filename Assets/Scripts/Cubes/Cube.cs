@@ -1,17 +1,25 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System;
 
 namespace Assets.Scripts
 {
-    public class Cube
+    public class Cube : MonoBehaviour
     {
-        public GameObject gameObject { get; set; }
+        public int Y => (int)gameObject.transform.position.y;
 
-        public int VerticalPosition => (int)gameObject.transform.position.y;
+        public Chunk ParentChunk { get; set; }
 
-        public Cube(GameObject gameObject)
+        public void DeleteFromChunk()
         {
-            this.gameObject = gameObject;
+            ParentChunk.DeleteCube(this);
+        }
+
+        public Tuple<int, int> GetCoordinates()
+        {
+            int x = (int)gameObject.transform.position.x;
+            int z = (int)gameObject.transform.position.z;
+            return new Tuple<int, int>(x, z);
         }
     }
 }   

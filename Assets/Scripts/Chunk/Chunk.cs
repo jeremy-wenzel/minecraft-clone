@@ -6,10 +6,10 @@ using UnityEngine;
 public class Chunk : MonoBehaviour
 {
     public const int CHUNK_SIZE = 8;
-    private const float _scaleFactor = 20f;
-    private const float _worldScale = 5f;
-    private const float _steepnessScale = 200f;
-    private const int _offset = 1000;
+    private const float scaleFactor = 20f;
+    private const float worldScale = 5f;
+    private const float steppnessScale = 200f;
+    private const int offset = 1000;
 
     private const int SNOW_MAX_Y = 8;
     private static readonly Perlin perlin = new Perlin();
@@ -31,12 +31,12 @@ public class Chunk : MonoBehaviour
         {
             for (int j = 0; j < CHUNK_SIZE; ++j)
             {
-                float newX = (StartX + i + _offset) / _scaleFactor;
-                float newZ = (StartZ + j + _offset) / _scaleFactor;
+                float newX = (StartX + i + offset) / scaleFactor;
+                float newZ = (StartZ + j + offset) / scaleFactor;
 
                 // this essentially allows us to generate the steepness. Dividing by _worldScale
                 // allows us to have plains and montains because the steepness spans over a longer distance
-                float steepnessY = perlin.DoPerlin(newX / _worldScale, newZ / _worldScale) * _steepnessScale;
+                float steepnessY = perlin.DoPerlin(newX / worldScale, newZ / worldScale) * steppnessScale;
                 float totalY =  perlin.DoPerlin(newX, newZ) * steepnessY;
                 Vector3 pos = new Vector3(StartX + i, (int)totalY, StartZ + j);
 
@@ -44,7 +44,7 @@ public class Chunk : MonoBehaviour
             }
         }
 
-        BuildColumns();
+        //BuildColumns();
         enabled = false;
     }
 
@@ -55,8 +55,7 @@ public class Chunk : MonoBehaviour
         {
             CubeManager.AddGameObjectToPool(localCube.Value.gameObject);
             localCube.Value.gameObject.SetActive(false);
-            localCube.Value.gameObject = null;
-            //Destroy(localCube.Value.gameObject);
+            localCube.Value.ParentChunk = null;
             allCubePositions.Remove(localCube.Key);
         }
 
@@ -79,8 +78,25 @@ public class Chunk : MonoBehaviour
             //Debug.Log("Creating new GameObject");
             objectToSpawn = Instantiate(prefab, position, new Quaternion());
         }
-        Cube cube = new Cube(objectToSpawn);
+        Cube cube = objectToSpawn.GetComponent<Cube>();
+        cube.ParentChunk = this;
         AddPositionToDictionaries(position, cube);
+    }
+
+    public void DeleteCube(Cube cube)
+    {
+        Tuple<int, int> cubeCoordinates = cube.GetCoordinates();
+        if (localCubePosition.ContainsKey(cubeCoordinates))
+        {
+            localCubePosition.Remove(cubeCoordinates);
+            allCubePositions.Remove(cubeCoordinates);
+            cube.ParentChunk = null;
+            cube.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError($"Could not find cube position {cubeCoordinates.Item1} {cubeCoordinates.Item2}");
+        }
     }
 
     public bool IsPositionInChunk(Vector3 pos)
@@ -119,15 +135,15 @@ public class Chunk : MonoBehaviour
                     Tuple<int, int> adjacentPos = new Tuple<int, int>(localCube.Key.Item1 + i, localCube.Key.Item2 + j);
                     if (allCubePositions.ContainsKey(adjacentPos))
                     {
-                        int adjacentHeight = allCubePositions[adjacentPos].VerticalPosition;
-                        int diffHeight = localCube.Value.VerticalPosition - adjacentHeight;
+                        int adjacentHeight = allCubePositions[adjacentPos].Y;
+                        int diffHeight = localCube.Value.Y - adjacentHeight;
 
                         if (diffHeight > 1)
                         {
                             for (int k = 1; k <= diffHeight; ++k)
                             {
-                                Vector3 newPos = new Vector3(localCube.Key.Item1, localCube.Value.VerticalPosition - k, localCube.Key.Item2);
-                                Cube newCube = new Cube(Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPos, new Quaternion()));
+                                Vector3 newPos = new Vector3(localCube.Key.Item1, localCube.Value.Y - k, localCube.Key.Item2);
+                                //Cube newCube = new Cube(Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPos, new Quaternion()), this);
                                 // This is where the bug lies. We need to find another way to build out the columns
                                 //AddPositionToDictionaries(newPos, newCube);
                             }
