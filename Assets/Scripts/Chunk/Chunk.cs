@@ -15,10 +15,14 @@ public class Chunk : MonoBehaviour
     private const int SNOW_MAX_Y = 8;
     #endregion Constants
 
-    #region Local Variables
+    #region Static variables
+    private static Dictionary<Tuple<int, int>, int> allCubePositions = new Dictionary<Tuple<int, int>, int>();
+    private static HashSet<Vector3> allVectors = new HashSet<Vector3>();
+    #endregion Static Variables
 
-    private static Dictionary<Tuple<int, int>, Cube> allCubePositions = new Dictionary<Tuple<int, int>, Cube>();
-    private Dictionary<Tuple<int, int>, Cube> localCubePosition = new Dictionary<Tuple<int, int>, Cube>();
+    #region Local Variables
+    private HashSet<Tuple<int, int>> localCubePosition = new HashSet<Tuple<int, int>>();
+    private HashSet<Cube> localCubes = new HashSet<Cube>();
 
     public float StartX { get; private set; }
     public float StartZ { get; private set; }
@@ -50,21 +54,27 @@ public class Chunk : MonoBehaviour
             }
         }
 
-        //BuildColumns(); // Commenting out until I figure out how to do this better
+        BuildColumns();
         enabled = false;
     }
 
     private void OnDestroy()
     {
         //Debug.Log($"Destroying chunk key = {GetKey()}");
-        // We need to make a showllow copy because the localCube is deleting from the localCubePositions
-        foreach (Cube localCube in localCubePosition.Values.ToArray())
+        foreach (Tuple<int, int> position in localCubePosition)
         {
-            CubeManager.AddGameObjectToPool(localCube.gameObject);
-            localCube.DeleteFromChunk();
+            allCubePositions.Remove(position);
         }
 
-        localCubePosition.Clear();
+        // We need to make a shallow copy because the localCube is deleting from the localCubePositions
+        foreach (Cube localCube in localCubes.ToArray())
+        {
+            if (localCube != null)
+            {
+                CubeManager.AddGameObjectToPool(localCube.gameObject);
+                localCube.DeleteFromChunk();
+            }
+        }
     }
 
     #endregion Unity Overrides
@@ -77,13 +87,11 @@ public class Chunk : MonoBehaviour
         GameObject objectToSpawn;
         if (CubeManager.HasGameObjectOfPrefab(prefab))
         {
-            //Debug.Log("Using CubeManager");
             objectToSpawn = CubeManager.GetGameObjectOfFromPool(prefab);
             objectToSpawn.transform.SetPositionAndRotation(position, new Quaternion());
         }
         else
         {
-            //Debug.Log("Creating new GameObject");
             objectToSpawn = Instantiate(prefab, position, new Quaternion());
         }
 
@@ -92,42 +100,68 @@ public class Chunk : MonoBehaviour
         AddPositionToDictionaries(position, cube);
     }
 
-    // Commenting out until I figure out to handle this
-    //private void BuildColumns()
-    //{
-    //    foreach (KeyValuePair<Tuple<int, int>, Cube> localCube in localCubePosition)
-    //    {
-    //        for (int i = -1; i <= 1; i += 2)
-    //        {
-    //            for (int j = -1; j <= 1; j += 2)
-    //            {
-    //                Tuple<int, int> adjacentPos = new Tuple<int, int>(localCube.Key.Item1 + i, localCube.Key.Item2 + j);
-    //                if (allCubePositions.ContainsKey(adjacentPos))
-    //                {
-    //                    int adjacentHeight = allCubePositions[adjacentPos].Y;
-    //                    int diffHeight = localCube.Value.Y - adjacentHeight;
+    private void BuildColumns()
+    {
+        for (int x = (int)StartX - 1; x <= StartX + CHUNK_SIZE; ++x)
+        {
+            for (int z = (int)StartZ - 1; z <= StartZ + CHUNK_SIZE; ++z)
+            {
+                Tuple<int, int> position = new Tuple<int, int>(x, z);
+                if (allCubePositions.ContainsKey(position))
+                {
+                    BuildColumnForPosition(position);
+                }
+            }
+        }   
+    }
 
-    //                    if (diffHeight > 1)
-    //                    {
-    //                        for (int k = 1; k <= diffHeight; ++k)
-    //                        {
-    //                            Vector3 newPos = new Vector3(localCube.Key.Item1, localCube.Value.Y - k, localCube.Key.Item2);
-    //                            //Cube newCube = new Cube(Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPos, new Quaternion()), this);
-    //                            // This is where the bug lies. We need to find another way to build out the columns
-    //                            //AddPositionToDictionaries(newPos, newCube);
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
+    private void BuildColumnForPosition(Tuple<int, int> position)
+    {
+        int minimumHeight = ComputeMinHeight(position);
+        int currentHeight = allCubePositions[position];
+        if (minimumHeight > 0)
+        {
+            for (int i = 0; i < minimumHeight; i++)
+            {
+                Vector3 newPosition = new Vector3(position.Item1, currentHeight - i, position.Item2);
+                if (!allVectors.Contains(newPosition))
+                {
+                    Cube newCube = Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPosition, new Quaternion()).GetComponent<Cube>();
+                    localCubes.Add(newCube);
+                    newCube.Spawn(this);
+                }
+            }
+        }
+    }
+
+    private static int[] xArr = new int[] { 0, 1, 0, -1 };
+    private static int[] zArr = new int[] { 1, 0, -1, 0 };
+    private int ComputeMinHeight(Tuple<int, int> position)
+    {
+        int minimumHeight = -9999999;
+        for (int i = 0; i < xArr.Length; i++)
+        {
+            Tuple<int, int> adjacentPosition = new Tuple<int, int>(position.Item1 + xArr[i], position.Item2 + zArr[i]);
+            if (allCubePositions.ContainsKey(adjacentPosition))
+            {
+                int distance = Math.Abs(allCubePositions[position] - allCubePositions[adjacentPosition]);
+                if (distance > minimumHeight)
+                {
+                    minimumHeight = distance;
+                }
+            }
+        }
+
+        return minimumHeight;
+    }
 
     private void AddPositionToDictionaries(Vector3 position, Cube cube)
     {
         Tuple<int, int> key = new Tuple<int, int>((int)position.x, (int)position.z);
-        localCubePosition.Add(key, cube);
-        allCubePositions.Add(key, cube);
+        localCubePosition.Add(key);
+        localCubes.Add(cube);
+        allCubePositions.Add(key, (int)position.y);
+        allVectors.Add(position);
     }
 
     #endregion Cube Creation methods
@@ -136,15 +170,14 @@ public class Chunk : MonoBehaviour
 
     public void DeleteCube(Cube cube)
     {
-        Tuple<int, int> cubeCoordinates = cube.GetCoordinates();
-        if (localCubePosition.ContainsKey(cubeCoordinates))
+        
+        if (localCubes.Contains(cube))
         {
-            localCubePosition.Remove(cubeCoordinates);
-            allCubePositions.Remove(cubeCoordinates);
+            localCubes.Remove(cube);
         }
         else
         {
-            Debug.LogError($"Could not find cube position {cubeCoordinates.Item1} {cubeCoordinates.Item2}");
+            Debug.LogError($"Could not find cube position");
         }
     }
 
