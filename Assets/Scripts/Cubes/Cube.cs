@@ -13,13 +13,16 @@ namespace Assets.Scripts
         private Chunk ParentChunk;
 
         /// <summary>
-        /// Removes the Cube from the Chunk and disables it's gameobject
+        /// Mines the cube
         /// </summary>
-        public void MineCube()
+        public virtual void MineCube()
         {
             ParentChunk.MineCube(this);
         }
 
+        /// <summary>
+        /// Deactivates the cube and sets the parent object to null
+        /// </summary>
         public void DeactivateCube()
         {
             ParentChunk = null;

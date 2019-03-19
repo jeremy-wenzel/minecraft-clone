@@ -10,6 +10,7 @@ public class PrefabManager: Singleton<PrefabManager>
     public GameObject Grass;
     public GameObject Snow;
     public GameObject Tree;
+    public GameObject Air;
 
     /// <summary>
     /// Get a particular prefab.
@@ -28,6 +29,8 @@ public class PrefabManager: Singleton<PrefabManager>
                 return GetInstance().Snow;
             case PrefabType.Tree:
                 return GetInstance().Tree;
+            case PrefabType.Air:
+                return GetInstance().Air;
             default:
                 Debug.Log($"Prefab type unknown or not implemented {prefabType}");
                 return null;
@@ -43,5 +46,6 @@ public enum PrefabType
     Chunk,
     Grass,
     Snow,
-    Tree
+    Tree,
+    Air
 }

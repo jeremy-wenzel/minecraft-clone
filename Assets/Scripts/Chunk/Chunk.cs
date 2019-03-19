@@ -102,6 +102,20 @@ public class Chunk : MonoBehaviour
         Cube cube = objectToSpawn.GetComponent<Cube>();
         cube.Spawn(this);
         AddPositionToDictionaries(position, cube);
+        AddAirCube(position);
+    }
+
+    /// <summary>
+    /// Adds the aircube 1 spot above the current position
+    /// </summary>
+    /// <param name="position"></param>
+    private void AddAirCube(Vector3 position)
+    {
+        Vector3 newPosition = new Vector3(position.x, position.y + 1, position.z);
+        AirCube cube = Instantiate(PrefabManager.GetPrefab(PrefabType.Air), newPosition, new Quaternion()).GetComponent<AirCube>();
+        cube.Spawn(this);
+        localCubes.Add(cube);
+        allVectors.Add(newPosition);
     }
 
     /// <summary>
@@ -185,19 +199,28 @@ public class Chunk : MonoBehaviour
     private void AddPositionToDictionaries(Vector3 position, Cube cube)
     {
         Tuple<int, int> key = new Tuple<int, int>((int)position.x, (int)position.z);
-        localCubePosition.Add(key);
+        if (!localCubePosition.Contains(key))
+        {
+            localCubePosition.Add(key);
+            allColumnHeights.Add(key, (int)position.y);
+        }
+
         localCubes.Add(cube);
-        allColumnHeights.Add(key, (int)position.y);
         allVectors.Add(position);
     }
 
+    /// <summary>
+    /// Adds the cube
+    /// </summary>
+    /// <param name="newPosition"></param>
     private void AddCube(Vector3 newPosition)
     {
         if (!allVectors.Contains(newPosition))
         {
             Cube newCube = Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPosition, new Quaternion()).GetComponent<Cube>();
-            localCubes.Add(newCube);
+            AddPositionToDictionaries(newPosition, newCube);
             newCube.Spawn(this);
+            AddAirCube(newPosition);
         }
     }
 
@@ -205,15 +228,11 @@ public class Chunk : MonoBehaviour
 
     #region Cube Deletion Methods
 
-<<<<<<< Updated upstream
     /// <summary>
-    /// Removes the cube from Chunk.
+    /// Removes the cube from the chunk
     /// </summary>
     /// <param name="cube"></param>
-    public void DeleteCube(Cube cube)
-=======
     private void RemoveCubeFromChunk(Cube cube)
->>>>>>> Stashed changes
     {
         if (localCubes.Contains(cube))
         {
@@ -225,6 +244,10 @@ public class Chunk : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Deactivates and removes the cube from the chunk
+    /// </summary>
+    /// <param name="cube"></param>
     private void DeactivateAndRemove(Cube cube)
     {
         CubeManager.AddGameObjectToPool(cube.gameObject);
@@ -232,36 +255,39 @@ public class Chunk : MonoBehaviour
         RemoveCubeFromChunk(cube);
     }
 
+    /// <summary>
+    /// Mines the cube. Deactivates and removes the cube
+    /// </summary>
+    /// <param name="cube"></param>
     public void MineCube(Cube cube)
     {
         DeactivateAndRemove(cube);
         PlaceSurroundingCubes(cube);
     }
 
+    /// <summary>
+    /// Places the surrounding cubes around the cube that was mined
+    /// </summary>
+    /// <param name="cube"></param>
     private void PlaceSurroundingCubes(Cube cube)
     {
         // Right
         Vector3 position = new Vector3(cube.X + 1, cube.Y, cube.Z);
         AddCube(position);
 
-        //position = new Vector3(cube.X + 1, cube.Y, cube.Z + 1);
-
-        //position = new Vector3(cube.X + 1, cube.Y, cube.Z - 1);
-
         // Up
         position = new Vector3(cube.X, cube.Y, cube.Z + 1);
         AddCube(position);
-        //position = new Vector3(cube.X + -1, cube.Y, cube.Z + 1);
-
-        //position = new Vector3(cube.X + -1, cube.Y, cube.Z + -1);
 
         // Left
         position = new Vector3(cube.X - 1, cube.Y, cube.Z);
         AddCube(position);
+
         // Down
         position = new Vector3(cube.X, cube.Y, cube.Z - 1);
         AddCube(position);
-        // Below
+
+        // Below (Incidently adds air cube right above current cube
         position = new Vector3(cube.X, cube.Y - 1, cube.Z);
         AddCube(position);
     }
