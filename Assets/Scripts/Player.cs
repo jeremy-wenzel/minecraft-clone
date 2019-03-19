@@ -34,7 +34,7 @@ namespace Assets.Scripts
                         Debug.LogError("gameobject {hit.transform.tag} is not cube type");
                         return;
                     }
-                    cube.DeleteFromChunk();
+                    cube.MineCube();
                 }
             }
         }

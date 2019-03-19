@@ -6,16 +6,22 @@ namespace Assets.Scripts
 {
     public class Cube : MonoBehaviour
     {
+        public int X => (int)gameObject.transform.position.x;
         public int Y => (int)gameObject.transform.position.y;
+        public int Z => (int)gameObject.transform.position.z;
 
         private Chunk ParentChunk;
 
         /// <summary>
         /// Removes the Cube from the Chunk and disables it's gameobject
         /// </summary>
-        public void DeleteFromChunk()
+        public void MineCube()
         {
-            ParentChunk.DeleteCube(this);
+            ParentChunk.MineCube(this);
+        }
+
+        public void DeactivateCube()
+        {
             ParentChunk = null;
             gameObject.SetActive(false);
         }

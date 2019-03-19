@@ -70,8 +70,8 @@ public class Chunk : MonoBehaviour
         {
             if (localCube != null)
             {
-                CubeManager.AddGameObjectToPool(localCube.gameObject);
-                localCube.DeleteFromChunk();
+                localCube.DeactivateCube();
+                RemoveCubeFromChunk(localCube);
             }
         }
     }
@@ -191,15 +191,29 @@ public class Chunk : MonoBehaviour
         allVectors.Add(position);
     }
 
+    private void AddCube(Vector3 newPosition)
+    {
+        if (!allVectors.Contains(newPosition))
+        {
+            Cube newCube = Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPosition, new Quaternion()).GetComponent<Cube>();
+            localCubes.Add(newCube);
+            newCube.Spawn(this);
+        }
+    }
+
     #endregion Cube Creation methods
 
     #region Cube Deletion Methods
 
+<<<<<<< Updated upstream
     /// <summary>
     /// Removes the cube from Chunk.
     /// </summary>
     /// <param name="cube"></param>
     public void DeleteCube(Cube cube)
+=======
+    private void RemoveCubeFromChunk(Cube cube)
+>>>>>>> Stashed changes
     {
         if (localCubes.Contains(cube))
         {
@@ -211,6 +225,47 @@ public class Chunk : MonoBehaviour
         }
     }
 
+    private void DeactivateAndRemove(Cube cube)
+    {
+        CubeManager.AddGameObjectToPool(cube.gameObject);
+        cube.DeactivateCube();
+        RemoveCubeFromChunk(cube);
+    }
+
+    public void MineCube(Cube cube)
+    {
+        DeactivateAndRemove(cube);
+        PlaceSurroundingCubes(cube);
+    }
+
+    private void PlaceSurroundingCubes(Cube cube)
+    {
+        // Right
+        Vector3 position = new Vector3(cube.X + 1, cube.Y, cube.Z);
+        AddCube(position);
+
+        //position = new Vector3(cube.X + 1, cube.Y, cube.Z + 1);
+
+        //position = new Vector3(cube.X + 1, cube.Y, cube.Z - 1);
+
+        // Up
+        position = new Vector3(cube.X, cube.Y, cube.Z + 1);
+        AddCube(position);
+        //position = new Vector3(cube.X + -1, cube.Y, cube.Z + 1);
+
+        //position = new Vector3(cube.X + -1, cube.Y, cube.Z + -1);
+
+        // Left
+        position = new Vector3(cube.X - 1, cube.Y, cube.Z);
+        AddCube(position);
+        // Down
+        position = new Vector3(cube.X, cube.Y, cube.Z - 1);
+        AddCube(position);
+        // Below
+        position = new Vector3(cube.X, cube.Y - 1, cube.Z);
+        AddCube(position);
+    }
+    
     #endregion Cube Deletion Methods
 
     #region Position Related Methods
