@@ -29,6 +29,9 @@ public class Chunk : MonoBehaviour
 
     private static readonly Perlin perlin = new Perlin();
 
+    public bool IsChanged { get; private set; } = false;
+    public bool IsVisible { get; private set; } = true;
+
     #endregion Local Variables
 
     #region Unity Overrides
@@ -199,7 +202,7 @@ public class Chunk : MonoBehaviour
     private void AddPositionToDictionaries(Vector3 position, Cube cube)
     {
         Tuple<int, int> key = new Tuple<int, int>((int)position.x, (int)position.z);
-        if (!localCubePosition.Contains(key))
+        if (!allColumnHeights.ContainsKey(key))
         {
             localCubePosition.Add(key);
             allColumnHeights.Add(key, (int)position.y);
@@ -213,14 +216,17 @@ public class Chunk : MonoBehaviour
     /// Adds the cube
     /// </summary>
     /// <param name="newPosition"></param>
-    private void AddCube(Vector3 newPosition)
+    private void AddCube(Vector3 newPosition, bool shouldAddAir)
     {
         if (!allVectors.Contains(newPosition))
         {
             Cube newCube = Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPosition, new Quaternion()).GetComponent<Cube>();
             AddPositionToDictionaries(newPosition, newCube);
             newCube.Spawn(this);
-            AddAirCube(newPosition);
+            if (shouldAddAir)
+            {
+                AddAirCube(newPosition);
+            }
         }
     }
 
@@ -261,6 +267,7 @@ public class Chunk : MonoBehaviour
     /// <param name="cube"></param>
     public void MineCube(Cube cube)
     {
+        IsChanged = true;
         DeactivateAndRemove(cube);
         PlaceSurroundingCubes(cube);
     }
@@ -273,23 +280,23 @@ public class Chunk : MonoBehaviour
     {
         // Right
         Vector3 position = new Vector3(cube.X + 1, cube.Y, cube.Z);
-        AddCube(position);
+        AddCube(position, false);
 
         // Up
         position = new Vector3(cube.X, cube.Y, cube.Z + 1);
-        AddCube(position);
+        AddCube(position, false);
 
         // Left
         position = new Vector3(cube.X - 1, cube.Y, cube.Z);
-        AddCube(position);
+        AddCube(position, false);
 
         // Down
         position = new Vector3(cube.X, cube.Y, cube.Z - 1);
-        AddCube(position);
+        AddCube(position, false);
 
         // Below (Incidently adds air cube right above current cube
         position = new Vector3(cube.X, cube.Y - 1, cube.Z);
-        AddCube(position);
+        AddCube(position, true);
     }
     
     #endregion Cube Deletion Methods
@@ -330,4 +337,15 @@ public class Chunk : MonoBehaviour
     }
 
     #endregion Position Related Methods
+
+    public void SetVisibility(bool makeVisible)
+    {
+        if ((makeVisible && !IsVisible) || (!makeVisible && IsVisible))
+        {
+            // We only want to set the state if we need to change.
+            localCubes.ForEach(c => c.SetVisibility(makeVisible));
+        }
+
+        IsVisible = makeVisible;
+    }
 }

@@ -67,17 +67,26 @@ public class Spawner : MonoBehaviour
                     }
                     else
                     {
-                        newChunks.Add(ChunkManager.GetChunkWithKey(Chunk.GetKey(pos)));
+                        Chunk existingChunk = ChunkManager.GetChunkWithKey(Chunk.GetKey(pos));
+                        existingChunk.SetVisibility(true);
+                        newChunks.Add(existingChunk);
                     }
                 }
             }
-
+            
             foreach (Chunk c in visibleChunks)
-            {
+            { 
                 if (!newChunks.Contains(c))
                 {
-                    ChunkManager.RemoveChunk(c);
-                    Destroy(c.gameObject);
+                    if (c.IsChanged)
+                    {
+                        c.SetVisibility(false);
+                    }
+                    else
+                    {
+                        ChunkManager.RemoveChunk(c);
+                        Destroy(c.gameObject);
+                    }
                 }
             }
             visibleChunks = newChunks;

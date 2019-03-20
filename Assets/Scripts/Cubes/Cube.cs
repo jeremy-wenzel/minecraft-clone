@@ -26,7 +26,7 @@ namespace Assets.Scripts
         public void DeactivateCube()
         {
             ParentChunk = null;
-            gameObject.SetActive(false);
+            SetVisibility(false);
         }
 
         /// <summary>
@@ -37,7 +37,12 @@ namespace Assets.Scripts
         {
             this.ParentChunk = parentChunk;
             // TODO: Should we check if the object is already active so we are not reactivating?
-            this.gameObject.SetActive(true);
+            SetVisibility(true);
+        }
+
+        public void SetVisibility(bool visible)
+        {
+            gameObject.SetActive(visible);
         }
     }
 }   
