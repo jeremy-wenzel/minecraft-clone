@@ -7,6 +7,7 @@ TagManager:
   - Grass
   - Snow
   - Air
+  - Water
   layers:
   - Default
   - TransparentFX
