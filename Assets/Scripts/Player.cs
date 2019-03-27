@@ -11,6 +11,7 @@ namespace Assets.Scripts
         public Camera camera;
 
         private bool isPlayerJumping = false;
+        private bool isInWater = false;
 
         private void Update()
         {
@@ -25,9 +26,10 @@ namespace Assets.Scripts
             {
                 Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
                 RaycastHit hit;
-                if (Physics.Raycast(ray, out hit) && hit.distance < 3f)
+                if (Physics.Raycast(ray, out hit) && hit.distance < 5f)
                 {
-                    Debug.Log("Looking at " + hit.transform.tag);
+                    //Debug.Log("Looking at " + hit.transform.tag);
+                    //Debug.Log($"Normal {hit.normal}");
                     Cube cube = hit.transform.gameObject.GetComponent<Cube>();
                     if (cube == null)
                     {
@@ -35,6 +37,21 @@ namespace Assets.Scripts
                         return;
                     }
                     cube.MineCube();
+                }
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit) && hit.distance < 5f)
+                {
+                    Cube cube = hit.transform.gameObject.GetComponent<Cube>();
+                    if (cube == null)
+                    {
+                        Debug.LogError("gameobject {hit.transform.tag} is not cube type");
+                        return;
+                    }
+                    cube.AddCube(hit.normal);
                 }
             }
         }
@@ -75,6 +92,18 @@ namespace Assets.Scripts
             float xTranslate = Input.GetAxis("Horizontal");
             float zTranslate = Input.GetAxis("Vertical");
             Vector3 trans = new Vector3(xTranslate, 0, zTranslate) * TRANS_SPEED * Time.deltaTime;
+            if (isInWater)
+            {
+                trans *= .1f;
+                Physics.gravity = new Vector3(0, -.1f, 0);
+                
+            }
+            else
+            {
+                
+                //Physics.gravity = new Vector3(0, -1, 0);
+            }
+
             if (isSprinting)
             {
                 trans *= SPRINT_SPEED;
@@ -94,6 +123,26 @@ namespace Assets.Scripts
         {
             // TODO: I don't like this but I am not sure of a better way.
             isPlayerJumping = false;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            isInWater = other.gameObject.tag == "Water";
+            if (isInWater)
+            {
+                Debug.Log("In Water");
+                this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            isInWater = other.gameObject.tag == "Water";
+            if (isInWater)
+            {
+                isInWater = false;
+                Physics.gravity = new Vector3(0, -9.81f, 0);
+            }
         }
     }
 }

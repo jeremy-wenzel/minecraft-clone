@@ -58,6 +58,7 @@ public class Chunk : MonoBehaviour
         }
 
         BuildColumns();
+        BuildWater();
         enabled = false;
     }
 
@@ -105,7 +106,10 @@ public class Chunk : MonoBehaviour
         Cube cube = objectToSpawn.GetComponent<Cube>();
         cube.Spawn(this);
         AddPositionToDictionaries(position, cube);
-        AddAirCube(position);
+        if (position.y >= -1)
+        {
+            AddAirCube(position);
+        }
     }
 
     /// <summary>
@@ -194,6 +198,24 @@ public class Chunk : MonoBehaviour
         return minimumHeight;
     }
 
+    private void BuildWater()
+    {
+        foreach (Tuple<int, int> cubeLocation in localCubePosition)
+        {
+            int height = allColumnHeights[cubeLocation];
+            if (height < -1)
+            {
+                for (int i = -1; i > height; --i)
+                {
+                    Vector3 newPos = new Vector3(cubeLocation.Item1, i, cubeLocation.Item2);
+                    Cube newCube = Instantiate(PrefabManager.GetPrefab(PrefabType.Water), newPos, new Quaternion()).GetComponent<Cube>();
+                    localCubes.Add(newCube);
+                    allVectors.Add(newPos);
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Adds position and cube to appropriate directories
     /// </summary>
@@ -228,6 +250,14 @@ public class Chunk : MonoBehaviour
                 AddAirCube(newPosition);
             }
         }
+    }
+
+    public void CreateNewCube(Vector3 newPos)
+    {
+        IsChanged = true;
+        // This needs to be changed asap. Just seeing if it works.
+        Cube newCube = Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPos, new Quaternion()).GetComponent<Cube>();
+        newCube.Spawn(this);
     }
 
     #endregion Cube Creation methods

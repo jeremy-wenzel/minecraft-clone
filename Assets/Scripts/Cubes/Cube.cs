@@ -10,7 +10,7 @@ namespace Assets.Scripts
         public int Y => (int)gameObject.transform.position.y;
         public int Z => (int)gameObject.transform.position.z;
 
-        private Chunk ParentChunk;
+        public Chunk ParentChunk { get; private set; }
 
         /// <summary>
         /// Mines the cube
@@ -27,6 +27,11 @@ namespace Assets.Scripts
         {
             ParentChunk = null;
             SetVisibility(false);
+        }
+
+        public virtual void AddCube(Vector3 surfaceNormal)
+        {
+            ParentChunk.CreateNewCube(new Vector3(X + surfaceNormal.x, Y + surfaceNormal.y, Z + surfaceNormal.z));
         }
 
         /// <summary>
