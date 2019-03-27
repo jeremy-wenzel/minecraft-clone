@@ -74,8 +74,7 @@ public class Chunk : MonoBehaviour
         {
             if (localCube != null)
             {
-                localCube.DeactivateCube();
-                RemoveCubeFromChunk(localCube);
+                DeactivateAndRemove(localCube);
             }
         }
     }
@@ -92,6 +91,15 @@ public class Chunk : MonoBehaviour
     private void CreateGameObject(BaseBiome biome, Vector3 position)
     {
         GameObject prefab = biome.GetObjectForPosition(position);
+        CreateGameObject(prefab, position);
+        if (position.y > -1)
+        {
+            AddAirCube(position);
+        }
+    }
+
+    private void CreateGameObject(GameObject prefab, Vector3 position)
+    {
         GameObject objectToSpawn;
         if (CubeManager.HasGameObjectOfPrefab(prefab))
         {
@@ -106,10 +114,6 @@ public class Chunk : MonoBehaviour
         Cube cube = objectToSpawn.GetComponent<Cube>();
         cube.Spawn(this);
         AddPositionToDictionaries(position, cube);
-        if (position.y >= -1)
-        {
-            AddAirCube(position);
-        }
     }
 
     /// <summary>
@@ -119,10 +123,7 @@ public class Chunk : MonoBehaviour
     private void AddAirCube(Vector3 position)
     {
         Vector3 newPosition = new Vector3(position.x, position.y + 1, position.z);
-        AirCube cube = Instantiate(PrefabManager.GetPrefab(PrefabType.Air), newPosition, new Quaternion()).GetComponent<AirCube>();
-        cube.Spawn(this);
-        localCubes.Add(cube);
-        allVectors.Add(newPosition);
+        CreateGameObject(PrefabManager.GetPrefab(PrefabType.Air), newPosition);
     }
 
     /// <summary>
@@ -159,14 +160,12 @@ public class Chunk : MonoBehaviour
         int currentHeight = allColumnHeights[position];
         if (minimumHeight > 0)
         {
-            for (int i = 0; i < minimumHeight; i++)
+            for (int i = 1; i <= minimumHeight; i++)
             {
                 Vector3 newPosition = new Vector3(position.Item1, currentHeight - i, position.Item2);
                 if (!allVectors.Contains(newPosition))
                 {
-                    Cube newCube = Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPosition, new Quaternion()).GetComponent<Cube>();
-                    localCubes.Add(newCube);
-                    newCube.Spawn(this);
+                    CreateGameObject(PrefabManager.GetPrefab(PrefabType.Grass), newPosition);
                 }
             }
         }
@@ -208,9 +207,7 @@ public class Chunk : MonoBehaviour
                 for (int i = -1; i > height; --i)
                 {
                     Vector3 newPos = new Vector3(cubeLocation.Item1, i, cubeLocation.Item2);
-                    Cube newCube = Instantiate(PrefabManager.GetPrefab(PrefabType.Water), newPos, new Quaternion()).GetComponent<Cube>();
-                    localCubes.Add(newCube);
-                    allVectors.Add(newPos);
+                    CreateGameObject(PrefabManager.GetPrefab(PrefabType.Water), newPos);
                 }
             }
         }
@@ -238,13 +235,11 @@ public class Chunk : MonoBehaviour
     /// Adds the cube
     /// </summary>
     /// <param name="newPosition"></param>
-    private void AddCube(Vector3 newPosition, bool shouldAddAir)
+    private void AddAdjacentCube(Vector3 newPosition, bool shouldAddAir)
     {
         if (!allVectors.Contains(newPosition))
         {
-            Cube newCube = Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPosition, new Quaternion()).GetComponent<Cube>();
-            AddPositionToDictionaries(newPosition, newCube);
-            newCube.Spawn(this);
+            CreateGameObject(PrefabManager.GetPrefab(PrefabType.Grass), newPosition);
             if (shouldAddAir)
             {
                 AddAirCube(newPosition);
@@ -256,8 +251,7 @@ public class Chunk : MonoBehaviour
     {
         IsChanged = true;
         // This needs to be changed asap. Just seeing if it works.
-        Cube newCube = Instantiate(PrefabManager.GetPrefab(PrefabType.Grass), newPos, new Quaternion()).GetComponent<Cube>();
-        newCube.Spawn(this);
+        CreateGameObject(PrefabManager.GetPrefab(PrefabType.Grass), newPos);
     }
 
     #endregion Cube Creation methods
@@ -310,23 +304,23 @@ public class Chunk : MonoBehaviour
     {
         // Right
         Vector3 position = new Vector3(cube.X + 1, cube.Y, cube.Z);
-        AddCube(position, false);
+        AddAdjacentCube(position, false);
 
         // Up
         position = new Vector3(cube.X, cube.Y, cube.Z + 1);
-        AddCube(position, false);
+        AddAdjacentCube(position, false);
 
         // Left
         position = new Vector3(cube.X - 1, cube.Y, cube.Z);
-        AddCube(position, false);
+        AddAdjacentCube(position, false);
 
         // Down
         position = new Vector3(cube.X, cube.Y, cube.Z - 1);
-        AddCube(position, false);
+        AddAdjacentCube(position, false);
 
         // Below (Incidently adds air cube right above current cube
         position = new Vector3(cube.X, cube.Y - 1, cube.Z);
-        AddCube(position, true);
+        AddAdjacentCube(position, true);
     }
     
     #endregion Cube Deletion Methods
