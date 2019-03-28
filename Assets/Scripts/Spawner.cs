@@ -100,6 +100,7 @@ public class Spawner : MonoBehaviour
 
         if (chunkCreationSet.Count > 0)
         {
+            // The downside to this is we will only build one per frame
             var pos = chunkCreationSet.Dequeue();
             var newChunkZ = Instantiate(PrefabManager.GetPrefab(PrefabType.Chunk), pos, new Quaternion());
             var chunk = (Chunk)newChunkZ.GetComponent(typeof(Chunk));

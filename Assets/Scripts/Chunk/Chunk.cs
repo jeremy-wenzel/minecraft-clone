@@ -17,7 +17,7 @@ public class Chunk : MonoBehaviour
 
     #region Static variables
     private static Dictionary<Tuple<int, int>, int> allColumnHeights = new Dictionary<Tuple<int, int>, int>();
-    private static HashSet<Vector3> allVectors = new HashSet<Vector3>();
+    private static Dictionary<Vector3, Cube> allVectors = new Dictionary<Vector3, Cube>();
     #endregion Static Variables
 
     #region Local Variables
@@ -123,7 +123,10 @@ public class Chunk : MonoBehaviour
     private void AddAirCube(Vector3 position)
     {
         Vector3 newPosition = new Vector3(position.x, position.y + 1, position.z);
-        CreateGameObject(PrefabManager.GetPrefab(PrefabType.Air), newPosition);
+        if (!allVectors.ContainsKey(newPosition))
+        {
+            CreateGameObject(PrefabManager.GetPrefab(PrefabType.Air), newPosition);
+        }
     }
 
     /// <summary>
@@ -163,7 +166,7 @@ public class Chunk : MonoBehaviour
             for (int i = 1; i <= minimumHeight; i++)
             {
                 Vector3 newPosition = new Vector3(position.Item1, currentHeight - i, position.Item2);
-                if (!allVectors.Contains(newPosition))
+                if (!allVectors.ContainsKey(newPosition))
                 {
                     CreateGameObject(PrefabManager.GetPrefab(PrefabType.Grass), newPosition);
                 }
@@ -228,7 +231,7 @@ public class Chunk : MonoBehaviour
         }
 
         localCubes.Add(cube);
-        allVectors.Add(position);
+        allVectors.Add(position, cube);
     }
 
     /// <summary>
@@ -237,13 +240,13 @@ public class Chunk : MonoBehaviour
     /// <param name="newPosition"></param>
     private void AddAdjacentCube(Vector3 newPosition, bool shouldAddAir)
     {
-        if (!allVectors.Contains(newPosition))
+        if (!allVectors.ContainsKey(newPosition))
         {
             CreateGameObject(PrefabManager.GetPrefab(PrefabType.Grass), newPosition);
-            if (shouldAddAir)
-            {
-                AddAirCube(newPosition);
-            }
+        }
+        if (shouldAddAir)
+        {
+            AddAirCube(newPosition);
         }
     }
 
@@ -274,15 +277,25 @@ public class Chunk : MonoBehaviour
         }
     }
 
+    private void RemoveCubeFromAllVectors(Cube cube)
+    {
+        Vector3 cubePos = new Vector3(cube.X, cube.Y, cube.Z);
+        if (allVectors.ContainsKey(cubePos))
+        {
+            allVectors.Remove(cubePos);
+        }
+    }
+
     /// <summary>
     /// Deactivates and removes the cube from the chunk
     /// </summary>
     /// <param name="cube"></param>
     private void DeactivateAndRemove(Cube cube)
     {
+        RemoveCubeFromChunk(cube);
+        RemoveCubeFromAllVectors(cube);
         CubeManager.AddGameObjectToPool(cube.gameObject);
         cube.DeactivateCube();
-        RemoveCubeFromChunk(cube);
     }
 
     /// <summary>
@@ -292,8 +305,12 @@ public class Chunk : MonoBehaviour
     public void MineCube(Cube cube)
     {
         IsChanged = true;
-        DeactivateAndRemove(cube);
+        // Need to refactor how we remove cubes
+        RemoveCubeFromChunk(cube);
+        RemoveCubeFromAllVectors(cube);
         PlaceSurroundingCubes(cube);
+        CubeManager.AddGameObjectToPool(cube.gameObject);
+        cube.DeactivateCube();
     }
 
     /// <summary>
