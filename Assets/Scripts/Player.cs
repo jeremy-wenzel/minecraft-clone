@@ -13,6 +13,9 @@ namespace Assets.Scripts
         private bool isPlayerJumping = false;
         private bool isInWater = false;
 
+        private static readonly Vector3 WATER_GRAVITY = new Vector3(0, -1.0f, 0);
+        private static readonly Vector3 NORMAL_GRAVITY = new Vector3(0, -9.81f, 0);
+
         private void Update()
         {
             HandleAction();
@@ -92,16 +95,15 @@ namespace Assets.Scripts
             float xTranslate = Input.GetAxis("Horizontal");
             float zTranslate = Input.GetAxis("Vertical");
             Vector3 trans = new Vector3(xTranslate, 0, zTranslate) * TRANS_SPEED * Time.deltaTime;
-            if (isInWater)
+            if (isInWater && Physics.gravity == NORMAL_GRAVITY)
             {
                 trans *= .1f;
-                Physics.gravity = new Vector3(0, -.1f, 0);
+                Physics.gravity = WATER_GRAVITY;
                 
             }
-            else
+            else if (!isInWater && Physics.gravity == WATER_GRAVITY)
             {
-                
-                //Physics.gravity = new Vector3(0, -1, 0);
+                Physics.gravity = NORMAL_GRAVITY;
             }
 
             if (isSprinting)
@@ -127,21 +129,17 @@ namespace Assets.Scripts
 
         private void OnTriggerEnter(Collider other)
         {
-            isInWater = other.gameObject.tag == "Water";
-            if (isInWater)
+            if (other.gameObject.tag == "Water")
             {
-                Debug.Log("In Water");
-                this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+                isInWater = true;
             }
         }
 
         private void OnTriggerExit(Collider other)
         {
-            isInWater = other.gameObject.tag == "Water";
-            if (isInWater)
+            if (other.gameObject.tag == "Water")
             {
                 isInWater = false;
-                Physics.gravity = new Vector3(0, -9.81f, 0);
             }
         }
     }

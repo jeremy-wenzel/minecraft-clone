@@ -8,6 +8,8 @@ TagManager:
   - Snow
   - Air
   - Water
+  - Wood
+  - Leaves
   layers:
   - Default
   - TransparentFX

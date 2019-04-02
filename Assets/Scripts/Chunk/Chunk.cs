@@ -112,8 +112,27 @@ public class Chunk : MonoBehaviour
         }
 
         Cube cube = objectToSpawn.GetComponent<Cube>();
-        cube.Spawn(this);
-        AddPositionToDictionaries(position, cube);
+        if (cube != null)
+        {
+            cube.Spawn(this);
+            AddPositionToDictionaries(position, cube);
+        }
+        else
+        {
+            Cube[] cubes = objectToSpawn.GetComponentsInChildren<Cube>(true);
+            foreach (Cube treeCube in cubes)
+            {
+                if (allVectors.ContainsKey(treeCube.GetPosition()))
+                {
+                    treeCube.DeactivateCube();
+                }
+                else
+                {
+                    treeCube.Spawn(this);
+                    AddPositionToDictionaries(treeCube.GetPosition(), treeCube);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -147,7 +166,10 @@ public class Chunk : MonoBehaviour
                 Tuple<int, int> position = new Tuple<int, int>(x, z);
                 if (allColumnHeights.ContainsKey(position))
                 {
-                    BuildColumnForPosition(position);
+                    if (allVectors.TryGetValue(new Vector3(x, allColumnHeights[position], z), out Cube cube) && !(cube is TreeCube))
+                    {
+                        BuildColumnForPosition(position);
+                    }
                 }
             }
         }   

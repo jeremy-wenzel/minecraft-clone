@@ -32,6 +32,11 @@ namespace Assets.Scripts
             ParentChunk.CreateNewCube(new Vector3(X + surfaceNormal.x, Y + surfaceNormal.y, Z + surfaceNormal.z));
         }
 
+        public Vector3 GetPosition()
+        {
+            return gameObject.transform.position;
+        }
+
         /// <summary>
         /// Activate the gameobject
         /// </summary>
