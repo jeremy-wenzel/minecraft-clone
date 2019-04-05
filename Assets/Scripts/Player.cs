@@ -18,9 +18,12 @@ namespace Assets.Scripts
 
         private void Update()
         {
-            HandleAction();
-            SetTranslation();
-            MaintainUpgrightRotation();
+            if (!PauseMenuScript.GamePaused)
+            {
+                HandleAction();
+                SetTranslation();
+                MaintainUpgrightRotation();
+            }
         }
 
         private void HandleAction()
@@ -81,13 +84,6 @@ namespace Assets.Scripts
             {
                 this.transform.SetPositionAndRotation(new Vector3(0, 8, 0), new Quaternion());
                 return;
-            }
-
-            // TODO: This should go somewhere else
-            bool exit = Input.GetKey(KeyCode.Escape);
-            if (exit)
-            {
-                Application.Quit();
             }
 
             bool isSprinting = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);

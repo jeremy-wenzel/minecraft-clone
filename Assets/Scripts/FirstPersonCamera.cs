@@ -13,7 +13,10 @@ public class FirstPersonCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        SetRotations();
+        if (!PauseMenuScript.GamePaused)
+        {
+            SetRotations();
+        }
     }
 
     /// <summary>
@@ -45,6 +48,4 @@ public class FirstPersonCamera : MonoBehaviour
         currentAngles.y += rot.y;
         parent.eulerAngles = currentAngles;
     }
-
-    
 }
