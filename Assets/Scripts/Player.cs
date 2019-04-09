@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
@@ -9,12 +10,16 @@ namespace Assets.Scripts
         public const int FORCE_MULTIPLIER = 500;
 
         public Camera camera;
+        public GameObject inventoryObject;
 
         private bool isPlayerJumping = false;
         private bool isInWater = false;
 
         private static readonly Vector3 WATER_GRAVITY = new Vector3(0, -1.0f, 0);
         private static readonly Vector3 NORMAL_GRAVITY = new Vector3(0, -9.81f, 0);
+
+        private int currentInventory = 0;
+        private List<PrefabType> inventoryTypes = new List<PrefabType>() { PrefabType.Grass, PrefabType.Snow };
 
         private void Update()
         {
@@ -59,6 +64,24 @@ namespace Assets.Scripts
                     }
                     cube.AddCube(hit.normal);
                 }
+            }
+            else if (Input.GetMouseButtonDown(2))
+            {
+                // Super hacky. but works.
+                if (currentInventory == 0)
+                {
+                    currentInventory = 1;
+                }
+                else
+                {
+                    currentInventory = 0;
+                }
+                Destroy(inventoryObject.transform.GetChild(0).gameObject);
+                var newObject = Instantiate(PrefabManager.GetPrefab(inventoryTypes[currentInventory]), inventoryObject.transform.position, new Quaternion());
+                newObject.transform.localScale = new Vector3(.1f, .1f, .1f);
+                Destroy(newObject.GetComponent<Rigidbody>());
+                newObject.transform.SetParent(inventoryObject.transform);
+                
             }
         }
 
