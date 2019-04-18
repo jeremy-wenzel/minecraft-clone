@@ -1,17 +1,16 @@
 fileFormatVersion: 2
-guid: 79b0f0348728cf24ca50710987847fcc
+guid: bf382dd4b1038b24f813f1e6dc46bbbc
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    2100000: Material__mc_grass
+    2100000: Material__grass_png
     2300000: //RootNode
     3300000: //RootNode
     4300000: Cube
     7400000: Default Take
     9500000: //RootNode
-    2186277476908879412: ImportLogs
   externalObjects: {}
   materials:
     importMaterials: 1

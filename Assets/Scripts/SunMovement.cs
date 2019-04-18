@@ -16,9 +16,13 @@ public class SunMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentTime += Time.deltaTime * speed;
+        // Update counter
+        currentTime += (Time.deltaTime * speed) % 1.0f;
+
+        // Update position
         this.transform.position = new Vector3(Mathf.Cos(currentTime) * startX, Mathf.Sin(currentTime) * startY, 0);
 
+        // Make sure to look at origin
         this.transform.LookAt(Vector3.zero);
     }
 }
