@@ -12,6 +12,7 @@ TagManager:
   - Leaves
   - Dirt
   - Stone
+  - Sand
   layers:
   - Default
   - TransparentFX
