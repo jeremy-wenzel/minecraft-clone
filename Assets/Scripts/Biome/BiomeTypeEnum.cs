@@ -3,6 +3,8 @@
     public enum BiomeTypeEnum
     {
         Grass,
-        Snow
+        Snow,
+        Stone,
+        Sand,
     }
 }

@@ -30,7 +30,7 @@ public class BiomeManager : Singleton<BiomeManager>
         else
         {
             // Just make a random one
-            int value = rand.Next() % 2;
+            int value = rand.Next() % 4;
             BaseBiome newBiome;
             switch (value)
             {
@@ -39,6 +39,12 @@ public class BiomeManager : Singleton<BiomeManager>
                     break;
                 case 1:
                     newBiome = new SnowBiome();
+                    break;
+                case 2:
+                    newBiome = new StoneBiome();
+                    break;
+                case 3:
+                    newBiome = new SandBiome();
                     break;
                 default:
                     newBiome = new GrassBiome();
