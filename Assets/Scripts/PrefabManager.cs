@@ -13,6 +13,7 @@ public class PrefabManager: Singleton<PrefabManager>
     public GameObject Air;
     public GameObject Water;
     public GameObject Dirt;
+    public GameObject Stone;
 
     /// <summary>
     /// Get a particular prefab.
@@ -37,6 +38,8 @@ public class PrefabManager: Singleton<PrefabManager>
                 return GetInstance().Water;
             case PrefabType.Dirt:
                 return GetInstance().Dirt;
+            case PrefabType.Stone:
+                return GetInstance().Stone;
             default:
                 Debug.Log($"Prefab type unknown or not implemented {prefabType}");
                 return null;
@@ -55,5 +58,6 @@ public enum PrefabType
     Tree,
     Air,
     Water,
-    Dirt
+    Dirt,
+    Stone,
 }
