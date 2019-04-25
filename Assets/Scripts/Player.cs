@@ -65,23 +65,32 @@ namespace Assets.Scripts
                     cube.AddCube(hit.normal);
                 }
             }
-            else if (Input.GetMouseButtonDown(2))
+
+            else if (Input.mouseScrollDelta.y != 0)
             {
-                // Super hacky. but works.
-                if (currentInventory == 0)
+                if (Input.mouseScrollDelta.y > 0)
                 {
-                    currentInventory = 1;
+                    currentInventory++;
                 }
                 else
                 {
+                    currentInventory--;
+                }
+
+                if (currentInventory >= inventoryTypes.Count)
+                {
                     currentInventory = 0;
                 }
+                else if (currentInventory < 0)
+                {
+                    currentInventory = inventoryTypes.Count - 1;
+                }
+
                 Destroy(inventoryObject.transform.GetChild(0).gameObject);
                 var newObject = Instantiate(PrefabManager.GetPrefab(inventoryTypes[currentInventory]), inventoryObject.transform.position, new Quaternion());
                 newObject.transform.localScale = new Vector3(.1f, .1f, .1f);
-                Destroy(newObject.GetComponent<Rigidbody>());
-                newObject.transform.SetParent(inventoryObject.transform);
-                
+                Destroy(newObject.GetComponent<BoxCollider>());
+                newObject.transform.SetParent(inventoryObject.transform);     
             }
         }
 
