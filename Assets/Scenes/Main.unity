@@ -1258,11 +1258,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1853837016}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1de639d18be8a2549b6c6990740b9a47, type: 3}
+  m_Script: {fileID: 11500000, guid: c5c54d841eb282d41b89f61f629e91d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 58809617}
-  inventoryObject: {fileID: 773264826}
+  inventoryGameObject: {fileID: 773264826}
 --- !u!54 &1853837022
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -10,7 +10,8 @@ namespace Assets.Scripts
         public const int FORCE_MULTIPLIER = 500;
 
         public Camera camera;
-        public GameObject inventoryObject;
+        public GameObject inventoryGameObject;
+        private Inventory inventory;
 
         private bool isPlayerJumping = false;
         private bool isInWater = false;
@@ -18,8 +19,10 @@ namespace Assets.Scripts
         private static readonly Vector3 WATER_GRAVITY = new Vector3(0, -1.0f, 0);
         private static readonly Vector3 NORMAL_GRAVITY = new Vector3(0, -9.81f, 0);
 
-        private int currentInventory = 0;
-        private List<PrefabType> inventoryTypes = new List<PrefabType>() { PrefabType.Grass, PrefabType.Snow };
+        private void Start()
+        {
+            inventory = new Inventory();
+        }
 
         private void Update()
         {
@@ -68,29 +71,21 @@ namespace Assets.Scripts
 
             else if (Input.mouseScrollDelta.y != 0)
             {
+                GameObject nextInventoryObject;
                 if (Input.mouseScrollDelta.y > 0)
                 {
-                    currentInventory++;
+                    nextInventoryObject = inventory.GetNextItem();
                 }
                 else
                 {
-                    currentInventory--;
+                    nextInventoryObject = inventory.GetPreviousItem();
                 }
 
-                if (currentInventory >= inventoryTypes.Count)
-                {
-                    currentInventory = 0;
-                }
-                else if (currentInventory < 0)
-                {
-                    currentInventory = inventoryTypes.Count - 1;
-                }
-
-                Destroy(inventoryObject.transform.GetChild(0).gameObject);
-                var newObject = Instantiate(PrefabManager.GetPrefab(inventoryTypes[currentInventory]), inventoryObject.transform.position, new Quaternion());
+                Destroy(inventoryGameObject.transform.GetChild(0).gameObject);
+                var newObject = Instantiate(nextInventoryObject, inventoryGameObject.transform.position, new Quaternion());
                 newObject.transform.localScale = new Vector3(.1f, .1f, .1f);
                 Destroy(newObject.GetComponent<BoxCollider>());
-                newObject.transform.SetParent(inventoryObject.transform);     
+                newObject.transform.SetParent(inventoryGameObject.transform);     
             }
         }
 
