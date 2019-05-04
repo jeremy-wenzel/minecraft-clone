@@ -1297,6 +1297,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3188226997683535892, guid: d488feca2660f9f418f843827183d804,
         type: 3}
+    - target: {fileID: 3503864339319056654, guid: 8781e1531d9066942abf0bb09f73af58,
+        type: 3}
+      propertyPath: Pickaxe
+      value: 
+      objectReference: {fileID: 6243162116405242, guid: 41e2866468026ca4d85176c5a9f64909,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8781e1531d9066942abf0bb09f73af58, type: 3}
 --- !u!1001 &6754893083296156500

@@ -95,8 +95,8 @@ namespace Assets.Scripts
                 nextInventoryObject = inventory.GetPreviousItem();
             }
 
-            var newObject = Instantiate(nextInventoryObject, inventoryGameObject.transform.position, new Quaternion());
-            newObject.transform.localScale = new Vector3(.1f, .1f, .1f);
+            var newObject = Instantiate(nextInventoryObject, inventoryGameObject.transform.position, nextInventoryObject.GetComponent<InventoryObject>().GetRotation());
+            newObject.transform.localScale = newObject.GetComponent<InventoryObject>().GetScale();
             Destroy(newObject.GetComponent<BoxCollider>());
             newObject.transform.SetParent(inventoryGameObject.transform);
         }

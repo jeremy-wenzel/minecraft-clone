@@ -15,6 +15,7 @@ public class PrefabManager: Singleton<PrefabManager>
     public GameObject Dirt;
     public GameObject Stone;
     public GameObject Sand;
+    public GameObject Pickaxe;
 
     /// <summary>
     /// Get a particular prefab.
@@ -43,6 +44,8 @@ public class PrefabManager: Singleton<PrefabManager>
                 return GetInstance().Stone;
             case PrefabType.Sand:
                 return GetInstance().Sand;
+            case PrefabType.Pickaxe:
+                return GetInstance().Pickaxe;
             default:
                 Debug.Log($"Prefab type unknown or not implemented {prefabType}");
                 return null;
@@ -64,4 +67,5 @@ public enum PrefabType
     Dirt,
     Stone,
     Sand,
+    Pickaxe,
 }

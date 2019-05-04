@@ -10,6 +10,7 @@ namespace Assets.Scripts
 
         public Inventory()
         {
+            SetupInventoryHelper(PrefabType.Pickaxe);
             SetupInventoryHelper(PrefabType.Grass);
             SetupInventoryHelper(PrefabType.Sand);
             SetupInventoryHelper(PrefabType.Snow);
