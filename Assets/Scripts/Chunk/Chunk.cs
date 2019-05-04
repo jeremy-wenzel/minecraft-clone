@@ -114,6 +114,11 @@ public class Chunk : MonoBehaviour
         Cube cube = objectToSpawn.GetComponent<Cube>();
         if (cube != null)
         {
+            if (allVectors.ContainsKey(position) && allVectors[position] is AirCube)
+            {
+                Destroy(allVectors[position]);
+                allVectors.Remove(position);
+            } 
             cube.Spawn(this);
             AddPositionToDictionaries(position, cube);
         }
