@@ -280,7 +280,6 @@ public class Chunk : MonoBehaviour
     public void CreateNewCube(Vector3 newPos, GameObject prefab)
     {
         IsChanged = true;
-        // This needs to be changed asap. Just seeing if it works.
         CreateGameObject(prefab, newPos);
     }
 
