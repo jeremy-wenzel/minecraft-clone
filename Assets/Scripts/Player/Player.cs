@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts
 {
@@ -24,6 +23,7 @@ namespace Assets.Scripts
         {
             inventory = new Inventory();
             audioSource = this.GetComponent<AudioSource>();
+            SetCurrentInventoryItem();
         }
 
         private void Update()
@@ -44,14 +44,14 @@ namespace Assets.Scripts
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit) && hit.distance < 5f)
                 {
-                    //Debug.Log("Looking at " + hit.transform.tag);
-                    //Debug.Log($"Normal {hit.normal}");
                     Cube cube = hit.transform.gameObject.GetComponent<Cube>();
                     if (cube == null)
                     {
                         Debug.LogError("gameobject {hit.transform.tag} is not cube type");
                         return;
                     }
+
+                    // This isn't great. could potentially abstrac this out.
                     audioSource.clip = cube.BreakSound;
                     audioSource.Play();
                     cube.MineCube();
@@ -75,22 +75,27 @@ namespace Assets.Scripts
 
             else if (Input.mouseScrollDelta.y != 0)
             {
-                GameObject nextInventoryObject;
-                if (Input.mouseScrollDelta.y > 0)
-                {
-                    nextInventoryObject = inventory.GetNextItem();
-                }
-                else
-                {
-                    nextInventoryObject = inventory.GetPreviousItem();
-                }
-
                 Destroy(inventoryGameObject.transform.GetChild(0).gameObject);
-                var newObject = Instantiate(nextInventoryObject, inventoryGameObject.transform.position, new Quaternion());
-                newObject.transform.localScale = new Vector3(.1f, .1f, .1f);
-                Destroy(newObject.GetComponent<BoxCollider>());
-                newObject.transform.SetParent(inventoryGameObject.transform);     
+                SetCurrentInventoryItem();
             }
+        }
+
+        private void SetCurrentInventoryItem()
+        {
+            GameObject nextInventoryObject;
+            if (Input.mouseScrollDelta.y > 0)
+            {
+                nextInventoryObject = inventory.GetNextItem();
+            }
+            else
+            {
+                nextInventoryObject = inventory.GetPreviousItem();
+            }
+
+            var newObject = Instantiate(nextInventoryObject, inventoryGameObject.transform.position, new Quaternion());
+            newObject.transform.localScale = new Vector3(.1f, .1f, .1f);
+            Destroy(newObject.GetComponent<BoxCollider>());
+            newObject.transform.SetParent(inventoryGameObject.transform);
         }
 
         /// <summary>
