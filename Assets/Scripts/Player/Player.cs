@@ -69,7 +69,10 @@ namespace Assets.Scripts
                         Debug.LogError("gameobject {hit.transform.tag} is not cube type");
                         return;
                     }
-                    cube.AddCube(hit.normal);
+
+                    cube.AddCube(hit.normal, inventory.GetCurrentItem());
+                    audioSource.clip = inventory.GetCurrentItem().GetComponent<Cube>().PlaceSound;
+                    audioSource.Play();
                 }
             }
 

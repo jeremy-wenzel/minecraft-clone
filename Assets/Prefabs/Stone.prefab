@@ -122,3 +122,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BreakSound: {fileID: 8300000, guid: 2d89404a7b7269741b07fdbc3a8e90ea, type: 3}
+  PlaceSound: {fileID: 8300000, guid: a3c38745ea15fa641b1abc0ec553ab96, type: 3}

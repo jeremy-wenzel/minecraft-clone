@@ -5,6 +5,7 @@ namespace Assets.Scripts
     public class Cube : MonoBehaviour
     {
         public AudioClip BreakSound;
+        public AudioClip PlaceSound;
 
         public int X => (int)gameObject.transform.position.x;
         public int Y => (int)gameObject.transform.position.y;
@@ -29,9 +30,9 @@ namespace Assets.Scripts
             SetVisibility(false);
         }
 
-        public virtual void AddCube(Vector3 surfaceNormal)
+        public virtual void AddCube(Vector3 surfaceNormal, GameObject prefab)
         {
-            ParentChunk.CreateNewCube(new Vector3(X + surfaceNormal.x, Y + surfaceNormal.y, Z + surfaceNormal.z));
+            ParentChunk.CreateNewCube(new Vector3(X + surfaceNormal.x, Y + surfaceNormal.y, Z + surfaceNormal.z), prefab);
         }
 
         public Vector3 GetPosition()
