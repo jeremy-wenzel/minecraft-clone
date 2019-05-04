@@ -12,6 +12,7 @@ namespace Assets.Scripts
         public Camera camera;
         public GameObject inventoryGameObject;
         private Inventory inventory;
+        private AudioSource audioSource;
 
         private bool isPlayerJumping = false;
         private bool isInWater = false;
@@ -22,6 +23,7 @@ namespace Assets.Scripts
         private void Start()
         {
             inventory = new Inventory();
+            audioSource = this.GetComponent<AudioSource>();
         }
 
         private void Update()
@@ -50,6 +52,8 @@ namespace Assets.Scripts
                         Debug.LogError("gameobject {hit.transform.tag} is not cube type");
                         return;
                     }
+                    audioSource.clip = cube.BreakSound;
+                    audioSource.Play();
                     cube.MineCube();
                 }
             }

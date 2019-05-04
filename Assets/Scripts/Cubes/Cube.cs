@@ -4,6 +4,8 @@ namespace Assets.Scripts
 {
     public class Cube : MonoBehaviour
     {
+        public AudioClip BreakSound;
+
         public int X => (int)gameObject.transform.position.x;
         public int Y => (int)gameObject.transform.position.y;
         public int Z => (int)gameObject.transform.position.z;
