@@ -35,7 +35,6 @@ public class Spawner : MonoBehaviour
         currentChunk = ChunkManager.GetChunkWithKey(Chunk.GetKey(new Vector3(0, 0, 0)));
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!currentChunk.IsPositionInChunk(player.transform.position))
@@ -49,55 +48,87 @@ public class Spawner : MonoBehaviour
                 return;
             }
 
-            HashSet<string> newChunks = new HashSet<string>();
-            for (float xOffset = -WorldConstants.CHUNK_SIZE * BUILD_WIDTH; xOffset < WorldConstants.CHUNK_SIZE * BUILD_WIDTH; xOffset += WorldConstants.CHUNK_SIZE)
-            {
-                for (float zOffset = -WorldConstants.CHUNK_SIZE * BUILD_WIDTH; zOffset < WorldConstants.CHUNK_SIZE * BUILD_WIDTH; zOffset += WorldConstants.CHUNK_SIZE)
-                {
-                    Vector3 pos = new Vector3(newChunk.StartX + xOffset, 0, newChunk.StartZ + zOffset);
-                    if (chunkDestructionSet.Contains(Chunk.GetKey(pos)))
-                    {
-                        chunkDestructionSet.Remove(Chunk.GetKey(pos));
-                    }
-                    if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
-                    {
-                        chunkCreationSet.Enqueue(pos);
-                    }
-                    else
-                    {
-                        Chunk existingChunk = ChunkManager.GetChunkWithKey(Chunk.GetKey(pos));
-                        existingChunk.SetVisibility(true);
-                        newChunks.Add(existingChunk.GetKey());
-                    }
-                }
-            }
-            
-            foreach (Chunk c in visibleChunks)
-            { 
-                if (!newChunks.Contains(c.GetKey()))
-                {
-                    if (c.IsChanged)
-                    {
-                        c.SetVisibility(false);
-                    }
-                    else
-                    {
-                        chunkDestructionSet.Add(c.GetKey());
-                    }
-                }
-            }
+            HashSet<string> newChunks = GetNewChunksForCreationFromCurrentChunk(newChunk);
+            DestroyOrHideUnseenChunks(newChunks);
 
             visibleChunks.Clear();
-            foreach (string s in newChunks)
-            {
-                if (ChunkManager.ChunkExists(s))
-                {
-                    visibleChunks.Add(ChunkManager.GetChunkWithKey(s));
-                }
-            }
+            AddAlreadyVisibileChunks(newChunks);
+
             currentChunk = newChunk;
         }
 
+        InitializeNewChunk();
+
+        DestroyChunkInQueue();
+    }
+
+
+    /// <summary>
+    /// Gets the new chunks to be created using the current position.
+    /// </summary>
+    /// <param name="newChunk"></param>
+    /// <returns></returns>
+    private HashSet<string> GetNewChunksForCreationFromCurrentChunk(Chunk newChunk)
+    {
+        HashSet<string> newChunks = new HashSet<string>();
+        for (float xOffset = -WorldConstants.CHUNK_SIZE * BUILD_WIDTH; xOffset < WorldConstants.CHUNK_SIZE * BUILD_WIDTH; xOffset += WorldConstants.CHUNK_SIZE)
+        {
+            for (float zOffset = -WorldConstants.CHUNK_SIZE * BUILD_WIDTH; zOffset < WorldConstants.CHUNK_SIZE * BUILD_WIDTH; zOffset += WorldConstants.CHUNK_SIZE)
+            {
+                Vector3 pos = new Vector3(newChunk.StartX + xOffset, 0, newChunk.StartZ + zOffset);
+                string chunkKey = Chunk.GetKey(pos);
+                if (chunkDestructionSet.Contains(chunkKey))
+                {
+                    chunkDestructionSet.Remove(chunkKey);
+                }
+
+                if (!ChunkManager.ChunkExists(chunkKey))
+                {
+                    chunkCreationSet.Enqueue(pos);
+                }
+                else
+                {
+                    Chunk existingChunk = ChunkManager.GetChunkWithKey(chunkKey);
+                    existingChunk.SetVisibility(true);
+                    newChunks.Add(existingChunk.GetKey());
+                }
+            }
+        }
+
+        return newChunks;
+    }
+
+    private void DestroyOrHideUnseenChunks(HashSet<string> newChunks)
+    {
+        foreach (Chunk c in visibleChunks)
+        {
+            if (!newChunks.Contains(c.GetKey()))
+            {
+                if (c.IsChanged)
+                {
+                    c.SetVisibility(false);
+                }
+                else
+                {
+                    chunkDestructionSet.Add(c.GetKey());
+                }
+            }
+        }
+    }
+
+    private void AddAlreadyVisibileChunks(HashSet<string> newChunks)
+    {
+        foreach (string s in newChunks)
+        {
+            if (ChunkManager.ChunkExists(s))
+            {
+                visibleChunks.Add(ChunkManager.GetChunkWithKey(s));
+            }
+        }
+    }
+
+    private void InitializeNewChunk()
+    {
         if (chunkCreationSet.Count > 0)
         {
             // The downside to this is we will only build one per frame
@@ -107,7 +138,10 @@ public class Spawner : MonoBehaviour
             ChunkManager.AddChunk(chunk);
             visibleChunks.Add(chunk);
         }
+    }
 
+    private void DestroyChunkInQueue()
+    {
         if (chunkDestructionSet.Count > 0)
         {
             string key = chunkDestructionSet.First();

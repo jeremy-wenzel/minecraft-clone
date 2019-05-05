@@ -388,6 +388,15 @@ public class Chunk : MonoBehaviour
         return $"{x.ToString("f0")} {z.ToString("f0")}";
     }
 
+    public static Vector3 GetVector3FromKey(string key)
+    {
+        string[] coordinates = key.Split(' ');
+        int x = int.Parse(coordinates[0]);
+        int z = int.Parse(coordinates[1]);
+
+        return new Vector3(x, 0, z);
+    }
+
     #endregion Position Related Methods
 
     public void SetVisibility(bool makeVisible)
