@@ -12,7 +12,19 @@ namespace Assets.Scripts
         private const int yMax = 256;
         private float[, ,] gradient;
 
-        public Perlin()
+        private static Perlin instance;
+
+        public static Perlin GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new Perlin();
+            }
+
+            return instance;
+        }
+
+        private Perlin()
         {
             gradient = new float[xMax, yMax, 2];
             GeneratePerlin();

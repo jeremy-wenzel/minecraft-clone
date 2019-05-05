@@ -7,12 +7,7 @@ using UnityEngine;
 public class Chunk : MonoBehaviour
 {
     #region Constants
-    public const int CHUNK_SIZE = 8;
-    private const float scaleFactor = 20f;
-    private const float worldScale = 5f;
-    private const float steppnessScale = 200f;
-    private const int offset = 1000;
-    private const int SNOW_MAX_Y = 8;
+    
     #endregion Constants
 
     #region Static variables
@@ -24,10 +19,8 @@ public class Chunk : MonoBehaviour
     private HashSet<Tuple<int, int>> localCubePosition = new HashSet<Tuple<int, int>>();
     private HashSet<Cube> localCubes = new HashSet<Cube>();
 
-    public float StartX { get; private set; }
-    public float StartZ { get; private set; }
-
-    private static readonly Perlin perlin = new Perlin();
+    public int StartX { get; private set; }
+    public int StartZ { get; private set; }
 
     public bool IsChanged { get; private set; } = false;
     public bool IsVisible { get; private set; } = true;
@@ -37,22 +30,14 @@ public class Chunk : MonoBehaviour
     #region Unity Overrides
     void Start()
     {
-        StartX = gameObject.transform.position.x;
-        StartZ = gameObject.transform.position.z;
+        StartX = (int)gameObject.transform.position.x;
+        StartZ = (int)gameObject.transform.position.z;
         BaseBiome biome = BiomeManager.GetBiome(StartX, StartZ);
-        for (int i = 0; i < CHUNK_SIZE; ++i)
+        for (int i = 0; i < WorldConstants.CHUNK_SIZE; ++i)
         {
-            for (int j = 0; j < CHUNK_SIZE; ++j)
+            for (int j = 0; j < WorldConstants.CHUNK_SIZE; ++j)
             {
-                float newX = (StartX + i + offset) / scaleFactor;
-                float newZ = (StartZ + j + offset) / scaleFactor;
-
-                // this essentially allows us to generate the steepness. Dividing by _worldScale
-                // allows us to have plains and montains because the steepness spans over a longer distance
-                float steepnessY = perlin.DoPerlin(newX / worldScale, newZ / worldScale) * steppnessScale;
-                float totalY = perlin.DoPerlin(newX, newZ) * steepnessY;
-                Vector3 pos = new Vector3(StartX + i, (int)totalY, StartZ + j);
-
+                Vector3 pos = biome.GetHeightForPosition(StartX, StartZ, i, j);
                 CreateGameObject(biome, pos);
             }
         }
@@ -154,7 +139,7 @@ public class Chunk : MonoBehaviour
     }
 
     /// <summary>
-    /// Builds out the columns from (StartX - 1 , StartZ - 1) to (StartX + CHUNK_SIZE, StartZ + CHUNK_SIZE)
+    /// Builds out the columns from (StartX - 1 , StartZ - 1) to (StartX + WorldConstants.CHUNK_SIZE, StartZ + WorldConstants.CHUNK_SIZE)
     /// What this means is that we will recompute columns on the edge of other Chunks surrounding this chunk.
     /// This needs to happen in case we run into a situation where we have a column that is shorter in this chunk
     /// but ther chunk's columns have already been computed chunks.
@@ -164,9 +149,9 @@ public class Chunk : MonoBehaviour
     /// </summary>
     private void BuildColumns()
     {
-        for (int x = (int)StartX - 1; x <= StartX + CHUNK_SIZE; ++x)
+        for (int x = (int)StartX - 1; x <= StartX + WorldConstants.CHUNK_SIZE; ++x)
         {
-            for (int z = (int)StartZ - 1; z <= StartZ + CHUNK_SIZE; ++z)
+            for (int z = (int)StartZ - 1; z <= StartZ +WorldConstants.CHUNK_SIZE; ++z)
             {
                 Tuple<int, int> position = new Tuple<int, int>(x, z);
                 if (allColumnHeights.ContainsKey(position))
@@ -397,8 +382,8 @@ public class Chunk : MonoBehaviour
     /// <returns></returns>
     public static string GetKey(Vector3 position)
     {
-        float x = position.x / CHUNK_SIZE;
-        float z = position.z / CHUNK_SIZE;
+        float x = position.x / WorldConstants.CHUNK_SIZE;
+        float z = position.z / WorldConstants.CHUNK_SIZE;
 
         return $"{x.ToString("f0")} {z.ToString("f0")}";
     }

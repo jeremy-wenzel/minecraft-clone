@@ -21,7 +21,7 @@ public class Spawner : MonoBehaviour
             {
                 // TODO: Refactor to a method
                 var newChunk = Instantiate(PrefabManager.GetPrefab(PrefabType.Chunk), 
-                    new Vector3(i * Chunk.CHUNK_SIZE, 0, j * Chunk.CHUNK_SIZE), 
+                    new Vector3(i * WorldConstants.CHUNK_SIZE, 0, j * WorldConstants.CHUNK_SIZE), 
                     new Quaternion());
                 var chunk = (Chunk)newChunk.GetComponent(typeof(Chunk));
                 ChunkManager.AddChunk(chunk);
@@ -40,22 +40,18 @@ public class Spawner : MonoBehaviour
         if (!currentChunk.IsPositionInChunk(player.transform.position))
         {
             chunkCreationSet.Clear();
-            //Debug.Log("Resetting chunk");
-            Chunk newChunk = ChunkManager.GetChunkWithKey(Chunk.GetKey(player.transform.position));
 
+            Chunk newChunk = ChunkManager.GetChunkWithKey(Chunk.GetKey(player.transform.position));
             if (newChunk == null)
             {
                 Debug.LogWarning($"NewChunk null, player position = {player.transform.position} chunkKey = {Chunk.GetKey(player.transform.position)}");
                 return;
             }
 
-            float xDiff = newChunk.StartX - currentChunk.StartX;
-            float zDiff = newChunk.StartZ - currentChunk.StartZ;
-
             HashSet<string> newChunks = new HashSet<string>();
-            for (float xOffset = -Chunk.CHUNK_SIZE * BUILD_WIDTH; xOffset < Chunk.CHUNK_SIZE * BUILD_WIDTH; xOffset += Chunk.CHUNK_SIZE)
+            for (float xOffset = -WorldConstants.CHUNK_SIZE * BUILD_WIDTH; xOffset < WorldConstants.CHUNK_SIZE * BUILD_WIDTH; xOffset += WorldConstants.CHUNK_SIZE)
             {
-                for (float zOffset = -Chunk.CHUNK_SIZE * BUILD_WIDTH; zOffset < Chunk.CHUNK_SIZE * BUILD_WIDTH; zOffset += Chunk.CHUNK_SIZE)
+                for (float zOffset = -WorldConstants.CHUNK_SIZE * BUILD_WIDTH; zOffset < WorldConstants.CHUNK_SIZE * BUILD_WIDTH; zOffset += WorldConstants.CHUNK_SIZE)
                 {
                     Vector3 pos = new Vector3(newChunk.StartX + xOffset, 0, newChunk.StartZ + zOffset);
                     if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
