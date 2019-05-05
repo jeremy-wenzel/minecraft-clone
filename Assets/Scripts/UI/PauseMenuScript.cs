@@ -14,6 +14,7 @@ public class PauseMenuScript : MonoBehaviour
     private void Start()
     {
         Menu = this;
+        SetGameState(false);
     }
 
     // Update is called once per frame
@@ -34,5 +35,6 @@ public class PauseMenuScript : MonoBehaviour
     {
         GamePaused = isPaused;
         PauseMenuObject.SetActive(isPaused);
+        Cursor.visible = isPaused;
     }
 }
