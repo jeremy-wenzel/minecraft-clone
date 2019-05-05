@@ -101,6 +101,7 @@ public class Spawner : MonoBehaviour
             var newChunkZ = Instantiate(PrefabManager.GetPrefab(PrefabType.Chunk), pos, new Quaternion());
             var chunk = (Chunk)newChunkZ.GetComponent(typeof(Chunk));
             ChunkManager.AddChunk(chunk);
+            visibleChunks.Add(chunk);
         }
     }
 }
