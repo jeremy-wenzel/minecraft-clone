@@ -12,7 +12,8 @@ public class Spawner : MonoBehaviour
     private const int BUILD_WIDTH = 5;
     private HashSet<Chunk> visibleChunks = new HashSet<Chunk>();
     private Queue<Vector3> chunkCreationSet = new Queue<Vector3>();
-    // Start is called before the first frame update
+    private HashSet<string> chunkDestructionSet = new HashSet<string>();
+
     void Start()
     {
         for (int i = -BUILD_WIDTH; i < BUILD_WIDTH; i++)
@@ -54,6 +55,10 @@ public class Spawner : MonoBehaviour
                 for (float zOffset = -WorldConstants.CHUNK_SIZE * BUILD_WIDTH; zOffset < WorldConstants.CHUNK_SIZE * BUILD_WIDTH; zOffset += WorldConstants.CHUNK_SIZE)
                 {
                     Vector3 pos = new Vector3(newChunk.StartX + xOffset, 0, newChunk.StartZ + zOffset);
+                    if (chunkDestructionSet.Contains(Chunk.GetKey(pos)))
+                    {
+                        chunkDestructionSet.Remove(Chunk.GetKey(pos));
+                    }
                     if (!ChunkManager.ChunkExists(Chunk.GetKey(pos)))
                     {
                         chunkCreationSet.Enqueue(pos);
@@ -77,8 +82,7 @@ public class Spawner : MonoBehaviour
                     }
                     else
                     {
-                        ChunkManager.RemoveChunk(c);
-                        Destroy(c.gameObject);
+                        chunkDestructionSet.Add(c.GetKey());
                     }
                 }
             }
@@ -102,6 +106,15 @@ public class Spawner : MonoBehaviour
             var chunk = (Chunk)newChunkZ.GetComponent(typeof(Chunk));
             ChunkManager.AddChunk(chunk);
             visibleChunks.Add(chunk);
+        }
+
+        if (chunkDestructionSet.Count > 0)
+        {
+            string key = chunkDestructionSet.First();
+            Chunk c = ChunkManager.GetChunkWithKey(key);
+            ChunkManager.RemoveChunk(c);
+            Destroy(c.gameObject);
+            chunkDestructionSet.Remove(key);
         }
     }
 }
