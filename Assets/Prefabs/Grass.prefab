@@ -124,7 +124,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1690638873110091353}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 1947dee3a714d284ea123c1b13b0d58d, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -143,6 +143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Rotation: {x: 0, y: 0, z: 0}
+  Scale: {x: 0, y: 0, z: 0}
 --- !u!114 &1471911185630438370
 MonoBehaviour:
   m_ObjectHideFlags: 0

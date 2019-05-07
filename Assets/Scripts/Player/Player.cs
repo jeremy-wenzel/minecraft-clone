@@ -24,6 +24,7 @@ namespace Assets.Scripts
             inventory = new Inventory();
             audioSource = this.GetComponent<AudioSource>();
             SetCurrentInventoryItem();
+            this.GetComponent<Rigidbody>().freezeRotation = true;
         }
 
         private void Update()
