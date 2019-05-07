@@ -4,9 +4,9 @@ namespace Assets.Scripts
 {
     public class Player : MonoBehaviour
     {
-        public const int TRANS_SPEED = 10;
-        public const int SPRINT_SPEED = 2;
-        public const int FORCE_MULTIPLIER = 500;
+        public int TRANS_SPEED = 10;
+        public float SPRINT_SPEED = 2;
+        public int JUMP_FORCE_MULTIPLIER = 500;
 
         public Camera camera;
         public GameObject inventoryGameObject;
@@ -150,7 +150,7 @@ namespace Assets.Scripts
             {
                 isPlayerJumping = true;
                 Rigidbody rb = gameObject.GetComponent<Rigidbody>();
-                rb.AddRelativeForce(Vector3.up * FORCE_MULTIPLIER);
+                rb.AddRelativeForce(Vector3.up * JUMP_FORCE_MULTIPLIER);
             }
 
             gameObject.transform.Translate(trans);

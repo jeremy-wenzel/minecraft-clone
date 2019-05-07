@@ -1044,6 +1044,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5c54d841eb282d41b89f61f629e91d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TRANS_SPEED: 10
+  SPRINT_SPEED: 1.5
+  JUMP_FORCE_MULTIPLIER: 250
   camera: {fileID: 58809617}
   inventoryGameObject: {fileID: 773264826}
 --- !u!54 &1853837022
