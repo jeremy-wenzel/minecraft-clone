@@ -97,6 +97,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rotation: {x: 90, y: 0, z: 90}
   Scale: {x: 1, y: 1, z: 1}
+  CanMine: 1
 --- !u!1 &6243162116405244
 GameObject:
   m_ObjectHideFlags: 0

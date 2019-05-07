@@ -11,6 +11,7 @@ namespace Assets.Scripts
     {
         public Vector3 Rotation;
         public Vector3 Scale;
+        public bool CanMine;
 
         public Quaternion GetRotation()
         {

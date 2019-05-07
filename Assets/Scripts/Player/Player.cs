@@ -39,7 +39,7 @@ namespace Assets.Scripts
 
         private void HandleAction()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && inventory.GetCurrentItem().GetComponent<InventoryObject>().CanMine)
             {
                 Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
                 RaycastHit hit;
@@ -96,7 +96,9 @@ namespace Assets.Scripts
                 nextInventoryObject = inventory.GetPreviousItem();
             }
 
-            var newObject = Instantiate(nextInventoryObject, inventoryGameObject.transform.position, nextInventoryObject.GetComponent<InventoryObject>().GetRotation());
+            var newObject = Instantiate(nextInventoryObject, new Vector3(), new Quaternion());
+            newObject.transform.position = inventoryGameObject.transform.position;
+            newObject.transform.localRotation = nextInventoryObject.GetComponent<InventoryObject>().GetRotation();
             newObject.transform.localScale = newObject.GetComponent<InventoryObject>().GetScale();
             Destroy(newObject.GetComponent<BoxCollider>());
             newObject.transform.SetParent(inventoryGameObject.transform);
