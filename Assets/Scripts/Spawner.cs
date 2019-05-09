@@ -39,8 +39,6 @@ public class Spawner : MonoBehaviour
     {
         if (!currentChunk.IsPositionInChunk(player.transform.position))
         {
-            chunkCreationSet.Clear();
-
             Chunk newChunk = ChunkManager.GetChunkWithKey(Chunk.GetKey(player.transform.position));
             if (newChunk == null)
             {
@@ -75,8 +73,8 @@ public class Spawner : MonoBehaviour
         {
             for (float zOffset = -WorldConstants.CHUNK_SIZE * BUILD_WIDTH; zOffset < WorldConstants.CHUNK_SIZE * BUILD_WIDTH; zOffset += WorldConstants.CHUNK_SIZE)
             {
-                Vector3 pos = new Vector3(newChunk.StartX + xOffset, 0, newChunk.StartZ + zOffset);
-                string chunkKey = Chunk.GetKey(pos);
+                Vector3 newChunkPosition = new Vector3(newChunk.StartX + xOffset, 0, newChunk.StartZ + zOffset);
+                string chunkKey = Chunk.GetKey(newChunkPosition);
                 if (chunkDestructionSet.Contains(chunkKey))
                 {
                     chunkDestructionSet.Remove(chunkKey);
@@ -84,18 +82,43 @@ public class Spawner : MonoBehaviour
 
                 if (!ChunkManager.ChunkExists(chunkKey))
                 {
-                    chunkCreationSet.Enqueue(pos);
+                    AddChunkToCreationSetIfNecessary(newChunkPosition);
                 }
                 else
                 {
-                    Chunk existingChunk = ChunkManager.GetChunkWithKey(chunkKey);
-                    existingChunk.SetVisibility(true);
-                    newChunks.Add(existingChunk.GetKey());
+                    MakeExistingChunkVisible(chunkKey, newChunks);
                 }
             }
         }
 
         return newChunks;
+    }
+
+    private void AddChunkToCreationSetIfNecessary(Vector3 newChunkPosition)
+    {
+        // We want to check if the chunk exists in the creation set
+        bool chunkExistsInCreationSet = false;
+        foreach (Vector3 existingChunkPosition in chunkCreationSet)
+        {
+            if (existingChunkPosition == newChunkPosition)
+            {
+                chunkExistsInCreationSet = true;
+                break;
+            }
+        }
+
+        if (!chunkExistsInCreationSet)
+        {
+            // Add the chunk to the creation queue if it doesn't exist already
+            chunkCreationSet.Enqueue(newChunkPosition);
+        }
+    }
+
+    private void MakeExistingChunkVisible(string chunkKey, HashSet<string> newChunks)
+    {
+        Chunk existingChunk = ChunkManager.GetChunkWithKey(chunkKey);
+        existingChunk.SetVisibility(true);
+        newChunks.Add(existingChunk.GetKey());
     }
 
     private void DestroyOrHideUnseenChunks(HashSet<string> newChunks)
