@@ -4,7 +4,7 @@ using System.Collections;
 public class SunMovement : MonoBehaviour
 {
     private float currentTime = 0;
-    private const float speed = .5f;
+    private const float speed = .005f;
     private float startY = 100;
     private float startX = 100;
     // Use this for initialization
