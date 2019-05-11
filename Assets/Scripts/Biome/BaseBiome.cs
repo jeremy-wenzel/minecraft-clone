@@ -3,6 +3,7 @@ using UnityEngine;
 
 public abstract class BaseBiome
 {
+    protected Perlin PerlinInstance => Perlin.GetInstance();
     /// <summary>
     /// The Snow starting height for non snow biomes
     /// </summary>
@@ -15,7 +16,7 @@ public abstract class BaseBiome
     /// <returns></returns>
     public abstract GameObject GetObjectForPosition(Vector3 position);
 
-    public virtual float AdjustHeightIfNecessary(float currentTotalY)
+    protected virtual float AdjustHeightIfNecessary(float newX, float newZ, float currentTotalY)
     {
         return currentTotalY;
     }
@@ -30,6 +31,6 @@ public abstract class BaseBiome
         // allows us to have plains and montains because the steepness spans over a longer distance
         float steepnessY = perlin.DoPerlin(newX / WorldConstants.WORLD_SCALE, newZ / WorldConstants.WORLD_SCALE) * WorldConstants.STEEPNESS_SCALE;
         float totalY = perlin.DoPerlin(newX, newZ) * steepnessY;
-        return new Vector3(startX + xOffset, (int)AdjustHeightIfNecessary(totalY), startZ + zOffset);
+        return new Vector3(startX + xOffset, (int)AdjustHeightIfNecessary(newX, newZ, totalY), startZ + zOffset);
     }
 }

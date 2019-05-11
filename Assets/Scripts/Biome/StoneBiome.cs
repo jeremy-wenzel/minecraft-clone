@@ -6,4 +6,9 @@ public class StoneBiome : BaseBiome
     {
         return PrefabManager.GetPrefab(PrefabType.Stone);
     }
+
+    protected override float AdjustHeightIfNecessary(float newX, float newZ, float currentTotalY)
+    {
+        return currentTotalY * 2;
+    }
 }

@@ -6,4 +6,9 @@ public class SandBiome : BaseBiome
     {
         return PrefabManager.GetPrefab(PrefabType.Sand);
     }
+    
+    protected override float AdjustHeightIfNecessary(float newX, float newZ, float currentTotalY)
+    {
+        return currentTotalY / 2;
+    }
 }
