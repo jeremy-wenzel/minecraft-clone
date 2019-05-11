@@ -15,6 +15,7 @@ public class PauseMenuScript : MonoBehaviour
     {
         Menu = this;
         SetGameState(false);
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     // Update is called once per frame
