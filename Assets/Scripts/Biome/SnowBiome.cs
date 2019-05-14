@@ -6,4 +6,9 @@ public class SnowBiome : BaseBiome
     {
         return PrefabManager.GetPrefab(PrefabType.Snow);
     }
+
+    public override GameObject GetColumnCube()
+    {
+        return PrefabManager.GetPrefab(PrefabType.Dirt);
+    }
 }

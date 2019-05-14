@@ -6,10 +6,6 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
-    #region Constants
-    
-    #endregion Constants
-
     #region Static variables
     private static Dictionary<Tuple<int, int>, int> allColumnHeights = new Dictionary<Tuple<int, int>, int>();
     private static Dictionary<Vector3, Cube> allVectors = new Dictionary<Vector3, Cube>();
@@ -18,6 +14,7 @@ public class Chunk : MonoBehaviour
     #region Local Variables
     private HashSet<Tuple<int, int>> localCubePosition = new HashSet<Tuple<int, int>>();
     private HashSet<Cube> localCubes = new HashSet<Cube>();
+    private BaseBiome currentBiome;
 
     public int StartX { get; private set; }
     public int StartZ { get; private set; }
@@ -32,13 +29,13 @@ public class Chunk : MonoBehaviour
     {
         StartX = (int)gameObject.transform.position.x;
         StartZ = (int)gameObject.transform.position.z;
-        BaseBiome biome = BiomeManager.GetBiome(StartX, StartZ);
+        currentBiome = BiomeManager.GetBiome(StartX, StartZ);
         for (int i = 0; i < WorldConstants.CHUNK_SIZE; ++i)
         {
             for (int j = 0; j < WorldConstants.CHUNK_SIZE; ++j)
             {
-                Vector3 pos = biome.GetHeightForPosition(StartX, StartZ, i, j);
-                CreateGameObject(biome, pos);
+                Vector3 pos = currentBiome.GetHeightForPosition(StartX, StartZ, i, j);
+                CreateGameObject(pos);
             }
         }
 
@@ -73,9 +70,9 @@ public class Chunk : MonoBehaviour
     /// </summary>
     /// <param name="biome"></param>
     /// <param name="position"></param>
-    private void CreateGameObject(BaseBiome biome, Vector3 position)
+    private void CreateGameObject(Vector3 position)
     {
-        GameObject prefab = biome.GetObjectForPosition(position);
+        GameObject prefab = currentBiome.GetObjectForPosition(position);
         CreateGameObject(prefab, position);
         if (position.y > -1)
         {
@@ -180,7 +177,7 @@ public class Chunk : MonoBehaviour
                 Vector3 newPosition = new Vector3(position.Item1, currentHeight - i, position.Item2);
                 if (!allVectors.ContainsKey(newPosition))
                 {
-                    CreateGameObject(PrefabManager.GetPrefab(PrefabType.Grass), newPosition);
+                    CreateGameObject(currentBiome.GetColumnCube(), newPosition);
                 }
             }
         }

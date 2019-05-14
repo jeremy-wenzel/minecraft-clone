@@ -30,6 +30,12 @@ namespace Assets.Scripts
             SetVisibility(false);
         }
 
+        public void Darken()
+        {
+            Material buildingMaterial = gameObject.GetComponent<Renderer>().material;
+            buildingMaterial.SetColor("Test", new Color(0, 0, 0, 0));
+        }
+
         public virtual void AddCube(Vector3 surfaceNormal, GameObject prefab)
         {
             ParentChunk.CreateNewCube(new Vector3(X + surfaceNormal.x, Y + surfaceNormal.y, Z + surfaceNormal.z), prefab);

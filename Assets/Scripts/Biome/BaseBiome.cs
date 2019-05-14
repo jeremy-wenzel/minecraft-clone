@@ -33,4 +33,6 @@ public abstract class BaseBiome
         float totalY = perlin.DoPerlin(newX, newZ) * steepnessY;
         return new Vector3(startX + xOffset, (int)AdjustHeightIfNecessary(newX, newZ, totalY), startZ + zOffset);
     }
+
+    public abstract GameObject GetColumnCube();
 }

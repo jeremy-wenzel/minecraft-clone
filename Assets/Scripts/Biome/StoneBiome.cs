@@ -11,4 +11,9 @@ public class StoneBiome : BaseBiome
     {
         return currentTotalY * 2;
     }
+
+    public override GameObject GetColumnCube()
+    {
+        return PrefabManager.GetPrefab(PrefabType.Stone);
+    }
 }

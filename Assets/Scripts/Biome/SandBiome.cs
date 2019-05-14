@@ -11,4 +11,9 @@ public class SandBiome : BaseBiome
     {
         return currentTotalY / 2;
     }
+
+    public override GameObject GetColumnCube()
+    {
+        return PrefabManager.GetPrefab(PrefabType.Sand);
+    }
 }
