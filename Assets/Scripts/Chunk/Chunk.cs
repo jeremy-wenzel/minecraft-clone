@@ -251,7 +251,7 @@ public class Chunk : MonoBehaviour
     {
         if (!allVectors.ContainsKey(newPosition))
         {
-            CreateGameObject(PrefabManager.GetPrefab(PrefabType.Grass), newPosition);
+            CreateGameObject(currentBiome.GetAdjacentCube(), newPosition);
         }
         if (shouldAddAir)
         {

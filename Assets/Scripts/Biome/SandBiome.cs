@@ -16,4 +16,9 @@ public class SandBiome : BaseBiome
     {
         return PrefabManager.GetPrefab(PrefabType.Sand);
     }
+
+    public override GameObject GetAdjacentCube()
+    {
+        return GetColumnCube();
+    }
 }

@@ -16,4 +16,9 @@ public class StoneBiome : BaseBiome
     {
         return PrefabManager.GetPrefab(PrefabType.Stone);
     }
+
+    public override GameObject GetAdjacentCube()
+    {
+        return GetColumnCube();
+    }
 }

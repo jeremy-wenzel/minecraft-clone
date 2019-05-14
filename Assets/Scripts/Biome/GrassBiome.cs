@@ -21,4 +21,9 @@ public class GrassBiome : BaseBiome
     {
         return PrefabManager.GetPrefab(PrefabType.Dirt);
     }
+
+    public override GameObject GetAdjacentCube()
+    {
+        return GetColumnCube();
+    }
 }

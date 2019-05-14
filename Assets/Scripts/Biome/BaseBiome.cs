@@ -35,4 +35,6 @@ public abstract class BaseBiome
     }
 
     public abstract GameObject GetColumnCube();
+
+    public abstract GameObject GetAdjacentCube();
 }
