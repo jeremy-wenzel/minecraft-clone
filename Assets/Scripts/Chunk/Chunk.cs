@@ -74,7 +74,7 @@ public class Chunk : MonoBehaviour
     {
         GameObject prefab = currentBiome.GetObjectForPosition(position);
         CreateGameObject(prefab, position);
-        if (position.y > -1)
+        if (position.y >= -1)
         {
             AddAirCube(position);
         }
@@ -233,12 +233,13 @@ public class Chunk : MonoBehaviour
     private void AddPositionToDictionaries(Vector3 position, Cube cube)
     {
         Tuple<int, int> key = new Tuple<int, int>((int)position.x, (int)position.z);
-        if (!allColumnHeights.ContainsKey(key))
+        if (!allColumnHeights.ContainsKey(key) && cube.ShouldBeUsedForDeterminingColumnHeight())
         {
-            localCubePosition.Add(key);
+            
             allColumnHeights.Add(key, (int)position.y);
         }
 
+        localCubePosition.Add(key);
         localCubes.Add(cube);
         allVectors.Add(position, cube);
     }

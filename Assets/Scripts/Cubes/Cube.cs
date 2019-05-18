@@ -61,5 +61,10 @@ namespace Assets.Scripts
         {
             gameObject.SetActive(visible);
         }
+
+        public virtual bool ShouldBeUsedForDeterminingColumnHeight()
+        {
+            return true;
+        }
     }
 }   

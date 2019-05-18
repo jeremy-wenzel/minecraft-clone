@@ -9,5 +9,10 @@ namespace Assets.Scripts
         {
             // don't do anything
         }
+
+        public override bool ShouldBeUsedForDeterminingColumnHeight()
+        {
+            return false;
+        }
     }
 }
