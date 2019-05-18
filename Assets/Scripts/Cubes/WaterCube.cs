@@ -12,5 +12,10 @@ namespace Assets.Scripts.Cubes
         {
             // Do nothing. Don't want to mine water cubes just yet
         }
+
+        public override bool ShouldBeUsedForDeterminingColumnHeight()
+        {
+            return false;
+        }
     }
 }

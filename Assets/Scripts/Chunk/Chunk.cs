@@ -216,10 +216,13 @@ public class Chunk : MonoBehaviour
             int height = allColumnHeights[cubeLocation];
             if (height < -1)
             {
-                for (int i = -1; i > height; --i)
+                for (int i = -2 ; i > height; --i)
                 {
                     Vector3 newPos = new Vector3(cubeLocation.Item1, i, cubeLocation.Item2);
-                    CreateGameObject(PrefabManager.GetPrefab(PrefabType.Water), newPos);
+                    if (!allVectors.ContainsKey(newPos))
+                    {
+                        CreateGameObject(PrefabManager.GetPrefab(PrefabType.Water), newPos);
+                    }
                 }
             }
         }
@@ -235,11 +238,11 @@ public class Chunk : MonoBehaviour
         Tuple<int, int> key = new Tuple<int, int>((int)position.x, (int)position.z);
         if (!allColumnHeights.ContainsKey(key) && cube.ShouldBeUsedForDeterminingColumnHeight())
         {
-            
             allColumnHeights.Add(key, (int)position.y);
+            localCubePosition.Add(key);
         }
 
-        localCubePosition.Add(key);
+        
         localCubes.Add(cube);
         allVectors.Add(position, cube);
     }
