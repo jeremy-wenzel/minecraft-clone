@@ -7,7 +7,7 @@ public class BiomeManager : Singleton<BiomeManager>
     private const int Z_RANGE = 100;
 
     private static Dictionary<Tuple<float, float>, BaseBiome> biomeDictionary = new Dictionary<Tuple<float, float>, BaseBiome>();
-    private static Random rand = new Random();
+    private static Random rand = new Random(0);
 
     /// <summary>
     /// Gets the biome from the local positions. Will cache previously created biomes so they
