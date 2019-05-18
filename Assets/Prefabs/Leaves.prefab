@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2514866352043870513}
   - component: {fileID: 5437558591544797375}
   - component: {fileID: 5790216857722700150}
-  - component: {fileID: 2731437558559394943}
+  - component: {fileID: 1233842247232217288}
   m_Layer: 0
   m_Name: Leaves
   m_TagString: Leaves
@@ -99,7 +99,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2731437558559394943
+--- !u!114 &1233842247232217288
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -108,6 +108,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 3641321262384579513}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8947bf7c96e26ca4eaf4ff1c9190286c, type: 3}
+  m_Script: {fileID: 11500000, guid: a64bc604ae164c04c9ac644f2df48776, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BreakSound: {fileID: 0}
+  PlaceSound: {fileID: 0}
