@@ -13,6 +13,8 @@ namespace Assets.Scripts
 
         public Chunk ParentChunk { get; private set; }
 
+        public bool WasPlaced { get; private set; }
+
         /// <summary>
         /// Mines the cube
         /// </summary>
@@ -50,11 +52,12 @@ namespace Assets.Scripts
         /// Activate the gameobject
         /// </summary>
         /// <param name="parentChunk"></param>
-        public void Spawn(Chunk parentChunk)
+        public void Spawn(Chunk parentChunk, bool wasPlaced)
         {
             this.ParentChunk = parentChunk;
             // TODO: Should we check if the object is already active so we are not reactivating?
             SetVisibility(true);
+            WasPlaced = wasPlaced;
         }
 
         public void SetVisibility(bool visible)

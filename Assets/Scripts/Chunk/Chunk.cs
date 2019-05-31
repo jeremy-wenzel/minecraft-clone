@@ -80,7 +80,7 @@ public class Chunk : MonoBehaviour
         }
     }
 
-    private void CreateGameObject(GameObject prefab, Vector3 position)
+    private void CreateGameObject(GameObject prefab, Vector3 position, bool wasPlaced = false)
     {
         GameObject objectToSpawn;
         if (CubeManager.HasGameObjectOfPrefab(prefab))
@@ -101,7 +101,7 @@ public class Chunk : MonoBehaviour
                 Destroy(allVectors[position]);
                 allVectors.Remove(position);
             } 
-            cube.Spawn(this);
+            cube.Spawn(this, wasPlaced);
             AddPositionToDictionaries(position, cube);
         }
         else
@@ -115,7 +115,7 @@ public class Chunk : MonoBehaviour
                 }
                 else
                 {
-                    treeCube.Spawn(this);
+                    treeCube.Spawn(this, false);
                     AddPositionToDictionaries(treeCube.GetPosition(), treeCube);
                 }
             }
@@ -266,7 +266,7 @@ public class Chunk : MonoBehaviour
     public void CreateNewCube(Vector3 newPos, GameObject prefab)
     {
         IsChanged = true;
-        CreateGameObject(prefab, newPos);
+        CreateGameObject(prefab, newPos, true);
     }
 
     #endregion Cube Creation methods
@@ -320,7 +320,11 @@ public class Chunk : MonoBehaviour
         // Need to refactor how we remove cubes
         RemoveCubeFromChunk(cube);
         RemoveCubeFromAllVectors(cube);
-        PlaceSurroundingCubes(cube);
+        if (!cube.WasPlaced)
+        {
+            PlaceSurroundingCubes(cube);
+        }
+        AddAirCube(new Vector3(cube.X, cube.Y - 1, cube.Z));
         CubeManager.AddGameObjectToPool(cube.gameObject);
         cube.DeactivateCube();
     }
@@ -349,7 +353,7 @@ public class Chunk : MonoBehaviour
 
         // Below (Incidently adds air cube right above current cube
         position = new Vector3(cube.X, cube.Y - 1, cube.Z);
-        AddAdjacentCube(position, true);
+        AddAdjacentCube(position, false);
     }
     
     #endregion Cube Deletion Methods
